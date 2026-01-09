@@ -7,8 +7,28 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    private int posRow;
+    private int posCol;
 
     public ChessPosition(int row, int col) {
+        posRow = row;
+        posCol = col;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ChessPosition position = (ChessPosition) obj;
+
+        return posRow == position.posRow && posCol == position.posCol;
+    }
+
+    @Override
+    public int hashCode() {
+        // 2^row * 3^col is guaranteed to produce a unique integer for every row/column combination
+        return Math.powExact(2, posRow) * Math.powExact(3, posCol);
     }
 
     /**
@@ -16,7 +36,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return posRow;
     }
 
     /**
@@ -24,6 +44,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+        return posCol;
     }
 }
