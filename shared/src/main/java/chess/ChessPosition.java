@@ -27,8 +27,8 @@ public class ChessPosition {
 
     @Override
     public int hashCode() {
-        // 2^row * 3^col is guaranteed to produce a unique integer for every row/column combination
-        return Math.powExact(2, posRow) * Math.powExact(3, posCol);
+        // The square are numbered bottom to top, left to right
+        return ((posRow - 1) * 8) + posCol;
     }
 
     /**
