@@ -29,6 +29,11 @@ public class ChessPiece {
         PAWN
     }
 
+    public enum RelativeTeamColor {
+        ALLY,
+        ENEMY
+    }
+
     public boolean equals(Object obj) {
         if (getClass() != obj.getClass()) {
             return false;
@@ -54,6 +59,20 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return pieceType;
+    }
+
+    private RelativeTeamColor getRelativeColor(ChessBoard board, ChessPosition position) {
+        ChessPiece piece = board.getPiece(position);
+        if (piece == null) {
+            return null;
+        }
+
+        ChessGame.TeamColor pieceColor = piece.getTeamColor();
+        if (color.equals(pieceColor)) {
+            return RelativeTeamColor.ALLY;
+        } else {
+            return RelativeTeamColor.ENEMY;
+        }
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
