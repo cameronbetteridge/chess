@@ -56,6 +56,30 @@ public class ChessPiece {
         return pieceType;
     }
 
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -64,6 +88,21 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        switch (pieceType) {
+            case KING:
+                return kingMoves(board, myPosition);
+            case QUEEN:
+                return queenMoves(board, myPosition);
+            case BISHOP:
+                return bishopMoves(board, myPosition);
+            case KNIGHT:
+                return knightMoves(board, myPosition);
+            case ROOK:
+                return rookMoves(board, myPosition);
+            case PAWN:
+                return pawnMoves(board, myPosition);
+            default:
+                throw new RuntimeException("Invalid piece type");
+        }
     }
 }
