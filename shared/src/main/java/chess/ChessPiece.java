@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Represents a single chess piece
@@ -75,8 +76,35 @@ public class ChessPiece {
         }
     }
 
+    private boolean validPosition(ChessPosition position) {
+        int col = position.getColumn();
+        int row = position.getRow();
+        return col <= 8 && col >= 1 && row <= 8 && row >= 1;
+    }
+
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        for (int horizontalChange = -1; horizontalChange <= 1; horizontalChange++) {
+            for (int verticalChange = -1; verticalChange <= 1; verticalChange++) {
+                if (horizontalChange == 0 && verticalChange == 0) {
+                    continue;
+                }
+
+                int newRow = myPosition.getRow() + horizontalChange;
+                int newCol = myPosition.getColumn() + verticalChange;
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+
+                if (validPosition(newPosition)) {
+                    if (getRelativeColor(board, newPosition) != RelativeTeamColor.ALLY) {
+                        ChessMove move = new ChessMove(myPosition, newPosition, null);
+                        movesList.add(move);
+                    }
+                }
+            }
+        }
+
+        return movesList;
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
