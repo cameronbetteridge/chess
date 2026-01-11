@@ -9,8 +9,12 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    private ChessGame.TeamColor color;
+    private PieceType pieceType;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        color = pieceColor;
+        pieceType = type;
     }
 
     /**
@@ -25,18 +29,31 @@ public class ChessPiece {
         PAWN
     }
 
+    public boolean equals(Object obj) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ChessPiece piece = (ChessPiece) obj;
+
+        return color.equals(piece.color) && pieceType.equals(piece.pieceType);
+    }
+
+    public int hashCode() {
+        return (color.ordinal() * 6) + pieceType.ordinal();
+    }
+
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return pieceType;
     }
 
     /**
