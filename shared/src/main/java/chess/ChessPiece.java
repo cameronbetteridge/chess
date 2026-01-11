@@ -108,11 +108,36 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = (ArrayList<ChessMove>) bishopMoves(board, myPosition);
+        movesList.addAll(rookMoves(board, myPosition));
+        return movesList;
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        for (int horizontalChange = -1; horizontalChange <= 1; horizontalChange+=2) {
+            for (int verticalChange = -1; verticalChange <= 1; verticalChange+=2) { // Each of the four diagonal directions
+                int newRow = myPosition.getRow() + horizontalChange;
+                int newCol = myPosition.getColumn() + verticalChange;
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+
+                while (validPosition(newPosition) && getRelativeColor(board, newPosition) == null) {
+                    ChessMove move = new ChessMove(myPosition, newPosition, null);
+                    movesList.add(move);
+                    newRow += horizontalChange;
+                    newCol += verticalChange;
+                    newPosition = new ChessPosition(newRow, newCol);
+                }
+
+                if (validPosition(newPosition) && !getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
+                    ChessMove move = new ChessMove(myPosition, newPosition, null);
+                    movesList.add(move);
+                }
+            }
+        }
+
+        return movesList;
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
