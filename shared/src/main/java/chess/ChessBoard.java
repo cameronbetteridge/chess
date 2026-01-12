@@ -40,6 +40,43 @@ public class ChessBoard {
         return true;
     }
 
+    private int[][] getPieceHashCodes() {
+        int[][] pieceCodes = new int[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece piece = getPiece(new ChessPosition(i+1, j+1));
+                if (piece == null) {
+                    pieceCodes[i][j] = 0;
+                } else {
+                    pieceCodes[i][j] = piece.hashCode() + 1;
+                }
+            }
+        }
+        return pieceCodes;
+    }
+
+    private int[] getHashCodesList() {
+        int[][] codes2dArray = getPieceHashCodes();
+        int[] codesArray = new int[64];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                codesArray[(i * 8) + j] = codes2dArray[i][j];
+            }
+        }
+        return codesArray;
+    }
+
+    public int hashCode() {
+        int[] hashCodesList = getHashCodesList();
+        int sum = 0;
+
+        for (int i = 0; i < 64; i++) {
+            sum += hashCodesList[i] * (13 ^ i);
+        }
+
+        return sum;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
