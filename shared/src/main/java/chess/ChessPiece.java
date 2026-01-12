@@ -82,6 +82,31 @@ public class ChessPiece {
         return col <= 8 && col >= 1 && row <= 8 && row >= 1;
     }
 
+    private ArrayList<ChessMove> constructChessMoves(ChessBoard board, ChessPosition myPosition, int horizontalChange, int verticalChange) {
+        int newRow = myPosition.getRow() + verticalChange;
+        int newCol = myPosition.getColumn() + horizontalChange;
+        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+
+        if (!validPosition(newPosition)) {
+            return null;
+        }
+        if (getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
+            return null;
+        }
+
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        if (pieceType.equals(PieceType.PAWN) && newRow == 8) {
+            for (PieceType type : PieceType.values()) {
+                movesList.add(new ChessMove(myPosition, newPosition, type));
+            }
+        } else {
+            movesList.add(new ChessMove(myPosition, newPosition, null));
+        }
+
+        return movesList;
+    }
+
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
 
@@ -91,15 +116,9 @@ public class ChessPiece {
                     continue;
                 }
 
-                int newRow = myPosition.getRow() + verticalChange;
-                int newCol = myPosition.getColumn() + horizontalChange;
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-
-                if (validPosition(newPosition)) {
-                    if (!getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
-                        ChessMove move = new ChessMove(myPosition, newPosition, null);
-                        movesList.add(move);
-                    }
+                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+                if (moves != null) {
+                    movesList.addAll(moves);
                 }
             }
         }
@@ -116,23 +135,17 @@ public class ChessPiece {
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
 
-        for (int horizontalChange = -1; horizontalChange <= 1; horizontalChange+=2) {
-            for (int verticalChange = -1; verticalChange <= 1; verticalChange+=2) { // Each of the four diagonal directions
-                int newRow = myPosition.getRow() + verticalChange;
-                int newCol = myPosition.getColumn() + horizontalChange;
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+        for (int horizontalDirection = -1; horizontalDirection <= 1; horizontalDirection+=2) {
+            for (int verticalDirection = -1; verticalDirection <= 1; verticalDirection+=2) { // Each of the four diagonal directions
+                int verticalChange = verticalDirection;
+                int horizontalChange = horizontalDirection;
+                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
 
-                while (validPosition(newPosition) && getRelativeColor(board, newPosition) == null) {
-                    ChessMove move = new ChessMove(myPosition, newPosition, null);
-                    movesList.add(move);
-                    newRow += verticalChange;
-                    newCol += horizontalChange;
-                    newPosition = new ChessPosition(newRow, newCol);
-                }
-
-                if (validPosition(newPosition) && !getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
-                    ChessMove move = new ChessMove(myPosition, newPosition, null);
-                    movesList.add(move);
+                while (moves != null) {
+                    movesList.addAll(moves);
+                    verticalChange += verticalDirection;
+                    horizontalChange += horizontalDirection;
+                    moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
                 }
             }
         }
@@ -154,15 +167,9 @@ public class ChessPiece {
                     verticalChange *= 2;
                 }
 
-                int newRow = myPosition.getRow() + verticalChange;
-                int newCol = myPosition.getColumn() + horizontalChange;
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-
-                if (validPosition(newPosition)) {
-                    if (!getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
-                        ChessMove move = new ChessMove(myPosition, newPosition, null);
-                        movesList.add(move);
-                    }
+                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+                if (moves != null) {
+                    movesList.addAll(moves);
                 }
             }
         }
