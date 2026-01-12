@@ -204,8 +204,45 @@ public class ChessPiece {
         return movesList;
     }
 
+    private boolean addPawnMoves(ArrayList<ChessMove> movesList, ChessBoard board, ChessPosition myPosition, int verticalChange, int horizontalChange, boolean capture) {
+        int newRow = myPosition.getRow() + verticalChange;
+        int newCol = myPosition.getColumn() + horizontalChange;
+
+        RelativeTeamColor relativeColor = getRelativeColor(board, new ChessPosition(newRow, newCol));
+        boolean condition = capture ? relativeColor.equals(RelativeTeamColor.ENEMY) : relativeColor == null;
+
+        if (condition) {
+            ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+            if (moves != null) {
+                movesList.addAll(moves);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        int verticalDirection;
+        if (color.equals(ChessGame.TeamColor.WHITE)) {
+            verticalDirection = 1;
+        } else {
+            verticalDirection = -1;
+        }
+
+        // Forward movement
+        if (addPawnMoves(movesList, board, myPosition, verticalDirection, 0, false)) {
+            if ((color.equals(ChessGame.TeamColor.WHITE) && myPosition.getRow() == 2) || (color.equals(ChessGame.TeamColor.BLACK) && myPosition.getRow() == 7)) {
+                addPawnMoves(movesList, board, myPosition, verticalDirection*2, 0, false);
+            }
+        }
+
+        // Diagonal captures
+        addPawnMoves(movesList, board, myPosition, verticalDirection, 1, true);
+        addPawnMoves(movesList, board, myPosition, verticalDirection, -1, true);
+
+        return movesList;
     }
 
     /**
