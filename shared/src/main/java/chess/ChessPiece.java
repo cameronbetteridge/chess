@@ -96,9 +96,11 @@ public class ChessPiece {
 
         ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
 
-        if (pieceType.equals(PieceType.PAWN) && newRow == 8) {
-            for (PieceType type : PieceType.values()) {
-                movesList.add(new ChessMove(myPosition, newPosition, type));
+        if (pieceType.equals(PieceType.PAWN)) {
+            if ((color.equals(ChessGame.TeamColor.WHITE) && newRow == 8) || (color.equals(ChessGame.TeamColor.BLACK) && newRow == 1)) {
+                for (PieceType type : PieceType.values()) {
+                    movesList.add(new ChessMove(myPosition, newPosition, type));
+                }
             }
         } else {
             movesList.add(new ChessMove(myPosition, newPosition, null));
@@ -178,7 +180,28 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        for (int horizontalDirection = -1; horizontalDirection <= 1; horizontalDirection++) {
+            for (int verticalDirection = -1; verticalDirection <= 1; verticalDirection++) {
+                if (Math.abs(horizontalDirection) + Math.abs(verticalDirection) > 1) {
+                    continue;
+                }
+
+                int verticalChange = verticalDirection;
+                int horizontalChange = horizontalDirection;
+                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+
+                while (moves != null) {
+                    movesList.addAll(moves);
+                    verticalChange += verticalDirection;
+                    horizontalChange += horizontalDirection;
+                    moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+                }
+            }
+        }
+
+        return movesList;
     }
 
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
