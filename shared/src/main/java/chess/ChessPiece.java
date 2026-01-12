@@ -91,12 +91,12 @@ public class ChessPiece {
                     continue;
                 }
 
-                int newRow = myPosition.getRow() + horizontalChange;
-                int newCol = myPosition.getColumn() + verticalChange;
+                int newRow = myPosition.getRow() + verticalChange;
+                int newCol = myPosition.getColumn() + horizontalChange;
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
 
                 if (validPosition(newPosition)) {
-                    if (getRelativeColor(board, newPosition) != RelativeTeamColor.ALLY) {
+                    if (!getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
                         ChessMove move = new ChessMove(myPosition, newPosition, null);
                         movesList.add(move);
                     }
@@ -118,15 +118,15 @@ public class ChessPiece {
 
         for (int horizontalChange = -1; horizontalChange <= 1; horizontalChange+=2) {
             for (int verticalChange = -1; verticalChange <= 1; verticalChange+=2) { // Each of the four diagonal directions
-                int newRow = myPosition.getRow() + horizontalChange;
-                int newCol = myPosition.getColumn() + verticalChange;
+                int newRow = myPosition.getRow() + verticalChange;
+                int newCol = myPosition.getColumn() + horizontalChange;
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
 
                 while (validPosition(newPosition) && getRelativeColor(board, newPosition) == null) {
                     ChessMove move = new ChessMove(myPosition, newPosition, null);
                     movesList.add(move);
-                    newRow += horizontalChange;
-                    newCol += verticalChange;
+                    newRow += verticalChange;
+                    newCol += horizontalChange;
                     newPosition = new ChessPosition(newRow, newCol);
                 }
 
@@ -141,7 +141,33 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
+
+        for (int horizontalChange = -2; horizontalChange <= 2; horizontalChange++) {
+            if (horizontalChange == 0) {
+                continue;
+            }
+
+            for (int verticalDirection = -1; verticalDirection <= 1; verticalDirection+=2) {
+                int verticalChange = verticalDirection;
+                if (Math.abs(horizontalChange) == 1) {
+                    verticalChange *= 2;
+                }
+
+                int newRow = myPosition.getRow() + verticalChange;
+                int newCol = myPosition.getColumn() + horizontalChange;
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+
+                if (validPosition(newPosition)) {
+                    if (!getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
+                        ChessMove move = new ChessMove(myPosition, newPosition, null);
+                        movesList.add(move);
+                    }
+                }
+            }
+        }
+
+        return movesList;
     }
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
