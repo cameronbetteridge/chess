@@ -8,10 +8,9 @@ package chess;
  */
 public class ChessBoard {
 
-    ChessPiece[][] boardPieces = new ChessPiece[8][8];
+    private ChessPiece[][] boardPieces = new ChessPiece[8][8];
 
     public ChessBoard() {
-        resetBoard();
     }
 
     /**
@@ -21,7 +20,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        boardPieces[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -32,26 +31,22 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return boardPieces[position.getRow() - 1][position.getColumn() - 1];
     }
 
     private void initializeBackRow(int row, ChessGame.TeamColor color) {
-        row--;
-
-        addPiece(new ChessPosition(row, 0), new ChessPiece(color, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(row, 1), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(row, 2), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(row, 3), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
-        addPiece(new ChessPosition(row, 4), new ChessPiece(color, ChessPiece.PieceType.KING));
-        addPiece(new ChessPosition(row, 5), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(row, 6), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(row, 7), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(row, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(row, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row, 3), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row, 4), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(row, 5), new ChessPiece(color, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(row, 6), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(row, 7), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(row, 8), new ChessPiece(color, ChessPiece.PieceType.ROOK));
     }
 
     private void initializePawnsRow(int row, ChessGame.TeamColor color) {
-        row--;
-
-        for (int i = 0; i < 8; i++) {
+        for (int i = 1; i < 9; i++) {
             addPiece(new ChessPosition(row, i), new ChessPiece(color, ChessPiece.PieceType.PAWN));
         }
     }
@@ -62,9 +57,9 @@ public class ChessBoard {
      */
     public void resetBoard() {
         initializeBackRow(1, ChessGame.TeamColor.WHITE);
-        initializeBackRow(8, ChessGame.TeamColor.BLACK);
         initializePawnsRow(2, ChessGame.TeamColor.WHITE);
         initializePawnsRow(7, ChessGame.TeamColor.BLACK);
+        initializeBackRow(8, ChessGame.TeamColor.BLACK);
 
         for (int row = 3; row < 7; row++) {
             for (int col = 1; col < 9; col++) {
