@@ -90,7 +90,8 @@ public class ChessPiece {
         if (!validPosition(newPosition)) {
             return null;
         }
-        if (getRelativeColor(board, newPosition).equals(RelativeTeamColor.ALLY)) {
+        RelativeTeamColor relativeColor = getRelativeColor(board, newPosition);
+        if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ALLY)) {
             return null;
         }
 
@@ -208,9 +209,15 @@ public class ChessPiece {
                                 int verticalChange, int horizontalChange, boolean capture) {
         int newRow = myPosition.getRow() + verticalChange;
         int newCol = myPosition.getColumn() + horizontalChange;
+        ChessPosition newPosition = new ChessPosition(newRow, newCol);
 
-        RelativeTeamColor relativeColor = getRelativeColor(board, new ChessPosition(newRow, newCol));
-        boolean condition = capture ? relativeColor.equals(RelativeTeamColor.ENEMY) : relativeColor == null;
+        if (!validPosition(newPosition)) {
+            return false;
+        }
+
+        RelativeTeamColor relativeColor = getRelativeColor(board, newPosition);
+        boolean newPositionHasEnemy = relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY);
+        boolean condition = capture ? newPositionHasEnemy : relativeColor == null;
 
         if (condition) {
             ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
