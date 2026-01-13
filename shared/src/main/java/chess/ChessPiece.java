@@ -204,7 +204,8 @@ public class ChessPiece {
         return movesList;
     }
 
-    private boolean addPawnMoves(ArrayList<ChessMove> movesList, ChessBoard board, ChessPosition myPosition, int verticalChange, int horizontalChange, boolean capture) {
+    private boolean addPawnMoves(ArrayList<ChessMove> movesList, ChessBoard board, ChessPosition myPosition,
+                                int verticalChange, int horizontalChange, boolean capture) {
         int newRow = myPosition.getRow() + verticalChange;
         int newCol = myPosition.getColumn() + horizontalChange;
 
@@ -233,7 +234,9 @@ public class ChessPiece {
 
         // Forward movement
         if (addPawnMoves(movesList, board, myPosition, verticalDirection, 0, false)) {
-            if ((color.equals(ChessGame.TeamColor.WHITE) && myPosition.getRow() == 2) || (color.equals(ChessGame.TeamColor.BLACK) && myPosition.getRow() == 7)) {
+            if (color.equals(ChessGame.TeamColor.WHITE) && myPosition.getRow() == 2) {
+                addPawnMoves(movesList, board, myPosition, verticalDirection*2, 0, false);
+            } else if (color.equals(ChessGame.TeamColor.BLACK) && myPosition.getRow() == 7) {
                 addPawnMoves(movesList, board, myPosition, verticalDirection*2, 0, false);
             }
         }
