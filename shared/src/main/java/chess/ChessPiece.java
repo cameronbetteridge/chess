@@ -102,11 +102,11 @@ public class ChessPiece {
                 for (PieceType type : PieceType.values()) {
                     movesList.add(new ChessMove(myPosition, newPosition, type));
                 }
+                return movesList;
             }
-        } else {
-            movesList.add(new ChessMove(myPosition, newPosition, null));
         }
 
+        movesList.add(new ChessMove(myPosition, newPosition, null));
         return movesList;
     }
 
@@ -146,6 +146,13 @@ public class ChessPiece {
 
                 while (moves != null) {
                     movesList.addAll(moves);
+
+                    ChessPosition endPosition = moves.get(0).getEndPosition();
+                    RelativeTeamColor relativeColor = getRelativeColor(board, endPosition);
+                    if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY)) {
+                        break;
+                    }
+
                     verticalChange += verticalDirection;
                     horizontalChange += horizontalDirection;
                     moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
@@ -195,6 +202,13 @@ public class ChessPiece {
 
                 while (moves != null) {
                     movesList.addAll(moves);
+
+                    ChessPosition endPosition = moves.get(0).getEndPosition();
+                    RelativeTeamColor relativeColor = getRelativeColor(board, endPosition);
+                    if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY)) {
+                        break;
+                    }
+
                     verticalChange += verticalDirection;
                     horizontalChange += horizontalDirection;
                     moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
