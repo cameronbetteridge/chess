@@ -30,6 +30,8 @@ public class ChessPiece {
         PAWN
     }
 
+    private PieceType[] allowedPromotionTypes = {PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT};
+
     public enum RelativeTeamColor {
         ALLY,
         ENEMY
@@ -99,7 +101,7 @@ public class ChessPiece {
 
         if (pieceType.equals(PieceType.PAWN)) {
             if ((color.equals(ChessGame.TeamColor.WHITE) && newRow == 8) || (color.equals(ChessGame.TeamColor.BLACK) && newRow == 1)) {
-                for (PieceType type : PieceType.values()) {
+                for (PieceType type : allowedPromotionTypes) {
                     movesList.add(new ChessMove(myPosition, newPosition, type));
                 }
                 return movesList;
