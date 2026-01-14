@@ -112,6 +112,26 @@ public class ChessPiece {
         return movesList;
     }
 
+    private void addMovesInStraightLine(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> movesList, int horizontalDirection, int verticalDirection) {
+        int verticalChange = verticalDirection;
+        int horizontalChange = horizontalDirection;
+        ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+
+        while (moves != null) {
+            movesList.addAll(moves);
+
+            ChessPosition endPosition = moves.get(0).getEndPosition();
+            RelativeTeamColor relativeColor = getRelativeColor(board, endPosition);
+            if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY)) {
+                break;
+            }
+
+            verticalChange += verticalDirection;
+            horizontalChange += horizontalDirection;
+            moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
+        }
+    }
+
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
 
@@ -142,23 +162,7 @@ public class ChessPiece {
 
         for (int horizontalDirection = -1; horizontalDirection <= 1; horizontalDirection+=2) {
             for (int verticalDirection = -1; verticalDirection <= 1; verticalDirection+=2) { // Each of the four diagonal directions
-                int verticalChange = verticalDirection;
-                int horizontalChange = horizontalDirection;
-                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
-
-                while (moves != null) {
-                    movesList.addAll(moves);
-
-                    ChessPosition endPosition = moves.get(0).getEndPosition();
-                    RelativeTeamColor relativeColor = getRelativeColor(board, endPosition);
-                    if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY)) {
-                        break;
-                    }
-
-                    verticalChange += verticalDirection;
-                    horizontalChange += horizontalDirection;
-                    moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
-                }
+                addMovesInStraightLine(board, myPosition, movesList, horizontalDirection, verticalDirection);
             }
         }
 
@@ -198,23 +202,7 @@ public class ChessPiece {
                     continue;
                 }
 
-                int verticalChange = verticalDirection;
-                int horizontalChange = horizontalDirection;
-                ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
-
-                while (moves != null) {
-                    movesList.addAll(moves);
-
-                    ChessPosition endPosition = moves.get(0).getEndPosition();
-                    RelativeTeamColor relativeColor = getRelativeColor(board, endPosition);
-                    if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ENEMY)) {
-                        break;
-                    }
-
-                    verticalChange += verticalDirection;
-                    horizontalChange += horizontalDirection;
-                    moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
-                }
+                addMovesInStraightLine(board, myPosition, movesList, horizontalDirection, verticalDirection);
             }
         }
 
