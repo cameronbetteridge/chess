@@ -112,7 +112,8 @@ public class ChessPiece {
         return movesList;
     }
 
-    private void addMovesInStraightLine(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> movesList, int horizontalDirection, int verticalDirection) {
+    private void addMovesInStraightLine(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> movesList,
+                                        int horizontalDirection, int verticalDirection) {
         int verticalChange = verticalDirection;
         int horizontalChange = horizontalDirection;
         ArrayList<ChessMove> moves = constructChessMoves(board, myPosition, horizontalChange, verticalChange);
