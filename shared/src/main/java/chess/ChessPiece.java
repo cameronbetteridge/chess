@@ -71,11 +71,7 @@ public class ChessPiece {
         }
 
         ChessGame.TeamColor pieceColor = piece.getTeamColor();
-        if (color.equals(pieceColor)) {
-            return RelativeTeamColor.ALLY;
-        } else {
-            return RelativeTeamColor.ENEMY;
-        }
+        return color.equals(pieceColor) ? RelativeTeamColor.ALLY : RelativeTeamColor.ENEMY;
     }
 
     private boolean validPosition(ChessPosition position) {
@@ -84,14 +80,35 @@ public class ChessPiece {
         return col <= 8 && col >= 1 && row <= 8 && row >= 1;
     }
 
-    private ArrayList<ChessMove> constructChessMoves(ChessBoard board, ChessPosition myPosition, int horizontalChange, int verticalChange) {
+    private ChessPosition constructChessPosition(ChessPosition myPosition, int verticalChange, int horizontalChange) {
         int newRow = myPosition.getRow() + verticalChange;
         int newCol = myPosition.getColumn() + horizontalChange;
-        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+        return new ChessPosition(newRow, newCol);
+    }
+
+    private boolean checkWhitePawnPromotion(ChessPosition newPosition) {
+        return newPosition.getRow() == 8;
+    }
+
+    private boolean checkBlackPawnPromotion(ChessPosition newPosition) {
+        return newPosition.getRow() == 1;
+    }
+
+    private boolean checkPawnPromotion(ChessPosition newPosition) {
+        if (!pieceType.equals(PieceType.PAWN)) {
+            return false;
+        }
+
+        return color.equals(ChessGame.TeamColor.WHITE) ? checkWhitePawnPromotion(newPosition) : checkBlackPawnPromotion(newPosition);
+    }
+
+    private ArrayList<ChessMove> constructChessMoves(ChessBoard board, ChessPosition myPosition, int horizontalChange, int verticalChange) {
+        ChessPosition newPosition = constructChessPosition(myPosition, verticalChange, horizontalChange);
 
         if (!validPosition(newPosition)) {
             return null;
         }
+
         RelativeTeamColor relativeColor = getRelativeColor(board, newPosition);
         if (relativeColor != null && relativeColor.equals(RelativeTeamColor.ALLY)) {
             return null;
@@ -99,13 +116,11 @@ public class ChessPiece {
 
         ArrayList<ChessMove> movesList = new ArrayList<ChessMove>();
 
-        if (pieceType.equals(PieceType.PAWN)) {
-            if ((color.equals(ChessGame.TeamColor.WHITE) && newRow == 8) || (color.equals(ChessGame.TeamColor.BLACK) && newRow == 1)) {
-                for (PieceType type : allowedPromotionTypes) {
-                    movesList.add(new ChessMove(myPosition, newPosition, type));
-                }
-                return movesList;
+        if (checkPawnPromotion(newPosition)) {
+            for (PieceType type : allowedPromotionTypes) {
+                movesList.add(new ChessMove(myPosition, newPosition, type));
             }
+            return movesList;
         }
 
         movesList.add(new ChessMove(myPosition, newPosition, null));
