@@ -7,58 +7,59 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessMove {
-    private ChessPosition start;
-    private ChessPosition end;
-    private ChessPiece.PieceType promotion;
+    private ChessPosition startPosition;
+    private ChessPosition endPosition;
+    private ChessPiece.PieceType promotionPiece;
 
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
-        start = startPosition;
-        end = endPosition;
-        promotion = promotionPiece;
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                     ChessPiece.PieceType promotionPiece) {
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+        this.promotionPiece = promotionPiece;
     }
 
-    @Override
     public boolean equals(Object obj) {
-        if (getClass() != obj.getClass()) {
+        if (obj == null | getClass() != obj.getClass()) {
             return false;
         }
         ChessMove move = (ChessMove) obj;
 
-        if (promotion == null && move.promotion == null) {
-            return start.equals(move.start) && end.equals(move.end);
-        } else if (promotion == null && move.promotion != null) {
-            return false;
-        } else if (promotion != null && move.promotion == null) {
-            return false;
+        if (promotionPiece == null) {
+            if (move.promotionPiece != null) {
+                return false;
+            }
         } else {
-            return start.equals(move.start) && end.equals(move.end) && promotion.equals(move.promotion);
+            if (!promotionPiece.equals(move.promotionPiece)) {
+                return false;
+            }
         }
+
+        return startPosition.equals(move.getStartPosition()) && endPosition.equals(move.getEndPosition());
     }
 
-    private int promotionHashCode() {
-        if (promotion == null) {
-            return 0;
-        }
-        return promotion.ordinal() + 1;
-    }
-
-    @Override
     public int hashCode() {
-        return (promotionHashCode() * 4096) + ((start.hashCode() - 1) * 64) + end.hashCode();
+        int promotionHash;
+        if (promotionPiece == null) {
+            promotionHash = 0;
+        } else {
+            promotionHash = promotionPiece.ordinal() + 1;
+        }
+
+        return (promotionHash * 5 * 64) + (startPosition.hashCode() * 64) + endPosition.hashCode();
     }
 
     /**
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        return start;
+        return startPosition;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        return end;
+        return endPosition;
     }
 
     /**
@@ -68,6 +69,6 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        return promotion;
+        return promotionPiece;
     }
 }

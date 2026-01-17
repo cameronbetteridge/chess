@@ -7,28 +7,25 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessPosition {
-    private int posRow;
-    private int posCol;
+    private int row;
+    private int col;
 
     public ChessPosition(int row, int col) {
-        posRow = row;
-        posCol = col;
+        this.row = row;
+        this.col = col;
     }
 
-    @Override
     public boolean equals(Object obj) {
-        if (getClass() != obj.getClass()) {
+        if (obj == null | getClass() != obj.getClass()) {
             return false;
         }
         ChessPosition position = (ChessPosition) obj;
 
-        return posRow == position.posRow && posCol == position.posCol;
+        return row == position.getRow() && col == position.getColumn();
     }
 
-    @Override
     public int hashCode() {
-        // The square are numbered bottom to top, left to right
-        return ((posRow - 1) * 8) + posCol;
+        return (row * 8) + col;
     }
 
     /**
@@ -36,7 +33,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return posRow;
+        return row;
     }
 
     /**
@@ -44,6 +41,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return posCol;
+        return col;
     }
 }

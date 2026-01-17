@@ -7,73 +7,44 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
-    private ChessPiece[][] boardPieces = new ChessPiece[8][8];
+    private ChessPiece[][] board;
 
     public ChessBoard() {
+        board = new ChessPiece[8][8];
     }
 
     public boolean equals(Object obj) {
-        if (getClass() != obj.getClass()) {
+        if (obj == null | getClass() != obj.getClass()) {
             return false;
         }
-        ChessBoard board = (ChessBoard) obj;
+        ChessBoard chessBoard = (ChessBoard) obj;
 
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                ChessPiece piece = getPiece(new ChessPosition(i, j));
-                ChessPiece otherPiece = board.getPiece(new ChessPosition(i, j));
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece thisPiece = getPiece(position);
+                ChessPiece thatPiece = chessBoard.getPiece(position);
 
-                boolean condition;
-                if (piece == null) {
-                    condition = otherPiece == null;
-                } else {
-                    condition = otherPiece != null && piece.equals(otherPiece);
-                }
-
-                if (!condition) {
+                if (thisPiece == null && thatPiece != null) {
+                    return false;
+                } else if (thisPiece != null && !thisPiece.equals(thatPiece)) {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
-    private int[][] getPieceHashCodes() {
-        int[][] pieceCodes = new int[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessPiece piece = getPiece(new ChessPosition(i+1, j+1));
-                if (piece == null) {
-                    pieceCodes[i][j] = 0;
-                } else {
-                    pieceCodes[i][j] = piece.hashCode() + 1;
-                }
-            }
-        }
-        return pieceCodes;
-    }
-
-    private int[] getHashCodesList() {
-        int[][] codes2dArray = getPieceHashCodes();
-        int[] codesArray = new int[64];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                codesArray[(i * 8) + j] = codes2dArray[i][j];
-            }
-        }
-        return codesArray;
-    }
-
     public int hashCode() {
-        int[] hashCodesList = getHashCodesList();
         int sum = 0;
-
-        for (int i = 0; i < 64; i++) {
-            sum += hashCodesList[i] * (13 ^ i);
+        int i = 0;
+        for (ChessPiece[] row : board) {
+            for (ChessPiece piece : row) {
+                int pieceHash = piece == null ? 0 : piece.hashCode() + 1;
+                sum += pieceHash * (12 ^ i);
+                i++;
+            }
         }
-
         return sum;
     }
 
@@ -84,7 +55,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        boardPieces[position.getRow() - 1][position.getColumn() - 1] = piece;
+        board[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -95,10 +66,16 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return boardPieces[position.getRow() - 1][position.getColumn() - 1];
+        return board[position.getRow()-1][position.getColumn()-1];
     }
 
-    private void initializeBackRow(int row, ChessGame.TeamColor color) {
+    private void addPawnsRow(ChessGame.TeamColor color, int row) {
+        for (int col = 1; col <= 8; col++) {
+            addPiece(new ChessPosition(row, col), new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
+    }
+
+    private void addBackRow(ChessGame.TeamColor color, int row) {
         addPiece(new ChessPosition(row, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(row, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(row, 3), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
@@ -109,9 +86,9 @@ public class ChessBoard {
         addPiece(new ChessPosition(row, 8), new ChessPiece(color, ChessPiece.PieceType.ROOK));
     }
 
-    private void initializePawnsRow(int row, ChessGame.TeamColor color) {
-        for (int i = 1; i < 9; i++) {
-            addPiece(new ChessPosition(row, i), new ChessPiece(color, ChessPiece.PieceType.PAWN));
+    private void clearRow(int row) {
+        for (int col = 1; col <= 8; col++) {
+            addPiece(new ChessPosition(row, col), null);
         }
     }
 
@@ -120,15 +97,14 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        initializeBackRow(1, ChessGame.TeamColor.WHITE);
-        initializePawnsRow(2, ChessGame.TeamColor.WHITE);
-        initializePawnsRow(7, ChessGame.TeamColor.BLACK);
-        initializeBackRow(8, ChessGame.TeamColor.BLACK);
+        addBackRow(ChessGame.TeamColor.WHITE, 1);
+        addBackRow(ChessGame.TeamColor.BLACK, 8);
+
+        addPawnsRow(ChessGame.TeamColor.WHITE, 2);
+        addPawnsRow(ChessGame.TeamColor.BLACK, 7);
 
         for (int row = 3; row < 7; row++) {
-            for (int col = 1; col < 9; col++) {
-                addPiece(new ChessPosition(row, col), null);
-            }
+            clearRow(row);
         }
     }
 }
