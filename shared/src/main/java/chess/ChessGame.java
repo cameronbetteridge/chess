@@ -54,16 +54,40 @@ public class ChessGame {
         BLACK
     }
 
-    private Collection<ChessMove> legalCastlingMoves(TeamColor teamColor) {
-        if (teamColor.equals(TeamColor.WHITE)) {
-            return whiteCastlingMoves();
-        } else {
-            return blackCastlingMoves();
+//    private Collection<ChessMove> legalCastlingMoves(TeamColor teamColor) {
+//        if (teamColor.equals(TeamColor.WHITE)) {
+//            return whiteCastlingMoves();
+//        } else {
+//            return blackCastlingMoves();
+//        }
+//    }
+
+    private ChessMove whiteEnPassant(ChessPosition startPosition) {
+        if (startPosition.getRow() != 5) {
+            return null;
         }
+        if (Math.abs(enPassantPosition.getColumn() - startPosition.getColumn()) != 1) {
+            return null;
+        }
+        return new ChessMove(startPosition, enPassantPosition, null);
+    }
+
+    private ChessMove blackEnPassant(ChessPosition startPosition) {
+        if (startPosition.getRow() != 4) {
+            return null;
+        }
+        if (Math.abs(enPassantPosition.getColumn() - startPosition.getColumn()) != 1) {
+            return null;
+        }
+        return new ChessMove(startPosition, enPassantPosition, null);
     }
 
     private ChessMove getEnPassant(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        if (enPassantPosition == null) { return null; }
+
+        ChessPiece piece = board.getPiece(startPosition);
+        TeamColor color = piece.getTeamColor();
+        return color == TeamColor.WHITE ? whiteEnPassant(startPosition) : blackEnPassant(startPosition);
     }
 
     private ChessBoard tryMove(ChessBoard board, ChessMove move) {
@@ -95,9 +119,10 @@ public class ChessGame {
             }
         }
 
-        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-            legalMoves.addAll(legalCastlingMoves(color));
-        } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+//        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+//            legalMoves.addAll(legalCastlingMoves(color));
+//        } else
+            if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
             ChessMove enPassant = getEnPassant(startPosition);
             if (enPassant != null) {
                 legalMoves.add(enPassant);
