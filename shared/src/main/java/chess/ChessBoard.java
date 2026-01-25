@@ -107,4 +107,15 @@ public class ChessBoard {
             clearRow(row);
         }
     }
+
+    public ChessBoard copy() {
+        ChessBoard newBoard = new ChessBoard();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                newBoard.addPiece(position, getPiece(position));
+            }
+        }
+        return newBoard;
+    }
 }
