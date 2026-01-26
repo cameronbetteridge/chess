@@ -54,13 +54,62 @@ public class ChessGame {
         BLACK
     }
 
-//    private Collection<ChessMove> legalCastlingMoves(TeamColor teamColor) {
-//        if (teamColor.equals(TeamColor.WHITE)) {
-//            return whiteCastlingMoves();
-//        } else {
-//            return blackCastlingMoves();
-//        }
-//    }
+    private boolean passesThroughCheck(int row, int firstMiddle, int secondMiddle) {
+        TeamColor color = row == 1 ? TeamColor.WHITE : TeamColor.BLACK;
+        ChessPosition startPosition = new ChessPosition(row, 5);
+        ChessPosition endPosition = new ChessPosition(row, firstMiddle);
+        ChessBoard hypotheticalBoard = tryMove(board, new ChessMove(startPosition, endPosition, null));
+        if (isInCheck(color, hypotheticalBoard)) {
+            return true;
+        }
+        if (firstMiddle != secondMiddle) {
+            endPosition = new ChessPosition(row, secondMiddle);
+            hypotheticalBoard = tryMove(board, new ChessMove(startPosition, endPosition, null));
+            return isInCheck(color, hypotheticalBoard);
+        }
+        return false;
+    }
+
+    private boolean validCastle(int row, int firstMiddle, int secondMiddle, int endCol) {
+        TeamColor color = row == 1 ? TeamColor.WHITE : TeamColor.BLACK;
+        if (board.getPiece(new ChessPosition(row, firstMiddle)) != null) {
+            return false;
+        } else if (board.getPiece(new ChessPosition(row, secondMiddle)) != null) {
+            return false;
+        } else if (board.getPiece(new ChessPosition(row, endCol)) != null) {
+            return false;
+        } else if (isInCheck(color)) {
+            return false;
+        } else {
+            return !passesThroughCheck(row, firstMiddle, secondMiddle);
+        }
+    }
+
+    private ChessMove castle(int row, int firstMiddle, int secondMiddle, int endCol) {
+        if (!validCastle(row, firstMiddle, secondMiddle, endCol)) { return null; }
+
+        ChessPosition startPosition = new ChessPosition(row, 5);
+        ChessPosition endPosition = new ChessPosition(row, endCol);
+        return new ChessMove(startPosition, endPosition, null);
+    }
+
+    private Collection<ChessMove> legalCastlingMoves(TeamColor teamColor) {
+        ArrayList<ChessMove> moves = new ArrayList<ChessMove>();
+        boolean isWhite = teamColor == TeamColor.WHITE;
+        int row = isWhite ? 1 : 8;
+        boolean canCastleKingside = isWhite ? whiteCanCastleKingside : blackCanCastleKingside;
+        boolean canCastleQueenside = isWhite ? whiteCanCastleQueenside : blackCanCastleQueenside;
+
+        if (canCastleKingside) {
+            ChessMove move = castle(row, 6, 6, 7);
+            if (move != null) { moves.add(move); }
+        }
+        if (canCastleQueenside) {
+            ChessMove move = castle(row, 4, 3, 2);
+            if (move != null) { moves.add(move); }
+        }
+        return moves;
+    }
 
     private ChessMove whiteEnPassant(ChessPosition startPosition) {
         if (startPosition.getRow() != 5) {
@@ -98,6 +147,20 @@ public class ChessGame {
         return resultingBoard;
     }
 
+    private void addSpecialMoves(Collection<ChessMove> moves, ChessPosition startPosition) {
+        ChessPiece piece = board.getPiece(startPosition);
+        TeamColor color = piece.getTeamColor();
+
+        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            moves.addAll(legalCastlingMoves(color));
+        } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            ChessMove enPassant = getEnPassant(startPosition);
+            if (enPassant != null) {
+                moves.add(enPassant);
+            }
+        }
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -112,23 +175,15 @@ public class ChessGame {
 
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
+
+        addSpecialMoves(moves, startPosition);
+
         for (ChessMove move : moves) {
             ChessBoard resultingBoard = tryMove(board, move);
             if (!isInCheck(color, resultingBoard)) {
                 legalMoves.add(move);
             }
         }
-
-//        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-//            legalMoves.addAll(legalCastlingMoves(color));
-//        } else
-            if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            ChessMove enPassant = getEnPassant(startPosition);
-            if (enPassant != null) {
-                legalMoves.add(enPassant);
-            }
-        }
-
         return legalMoves;
     }
 
