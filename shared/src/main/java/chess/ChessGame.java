@@ -252,6 +252,26 @@ public class ChessGame {
         }
     }
 
+    private boolean isCastlingMove(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        if (board.getPiece(startPosition).getPieceType() != ChessPiece.PieceType.KING) {
+            return false;
+        } else {
+            return Math.abs(startPosition.getColumn() - move.getEndPosition().getColumn()) == 2;
+        }
+    }
+
+    private void castleRook(ChessMove move) {
+        ChessPosition kingPosition = move.getEndPosition();
+        int row = kingPosition.getRow();
+        int endCol = kingPosition.getColumn() == 3 ? 4 : 6;
+        int startCol = endCol == 4 ? 1 : 8;
+        ChessPosition endPosition = new ChessPosition(row, endCol);
+        ChessPosition startPosition = new ChessPosition(row, startCol);
+        board.addPiece(endPosition, board.getPiece(startPosition));
+        board.addPiece(startPosition, null);
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -264,6 +284,7 @@ public class ChessGame {
         }
 
         ChessPiece piece = board.getPiece(move.getStartPosition());
+        boolean isCastleMove = isCastlingMove(move);
 
         updateEnPassantPosition(move);
         updateCastlingRights(move);
@@ -274,6 +295,7 @@ public class ChessGame {
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         }
         board.addPiece(move.getEndPosition(), piece);
+        if (isCastleMove) { castleRook(move); }
     }
 
     private boolean canMoveTo(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board) {
