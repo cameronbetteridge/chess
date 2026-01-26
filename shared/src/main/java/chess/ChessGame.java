@@ -3,6 +3,7 @@ package chess;
 import javax.management.RuntimeErrorException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,6 +53,20 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return whiteCanCastleKingside == chessGame.whiteCanCastleKingside && whiteCanCastleQueenside == chessGame.whiteCanCastleQueenside && blackCanCastleKingside == chessGame.blackCanCastleKingside && blackCanCastleQueenside == chessGame.blackCanCastleQueenside && Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn && Objects.equals(enPassantPosition, chessGame.enPassantPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, teamTurn, enPassantPosition, whiteCanCastleKingside, whiteCanCastleQueenside, blackCanCastleKingside, blackCanCastleQueenside);
     }
 
     private boolean passesThroughCheck(int row, int firstMiddle, int secondMiddle) {
@@ -134,8 +149,7 @@ public class ChessGame {
     private ChessMove getEnPassant(ChessPosition startPosition) {
         if (enPassantPosition == null) { return null; }
 
-        ChessPiece piece = board.getPiece(startPosition);
-        TeamColor color = piece.getTeamColor();
+        TeamColor color = board.getPiece(startPosition).getTeamColor();
         return color == TeamColor.WHITE ? whiteEnPassant(startPosition) : blackEnPassant(startPosition);
     }
 
