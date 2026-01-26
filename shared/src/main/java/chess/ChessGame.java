@@ -60,12 +60,18 @@ public class ChessGame {
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return whiteCanCastleKingside == chessGame.whiteCanCastleKingside && whiteCanCastleQueenside == chessGame.whiteCanCastleQueenside && blackCanCastleKingside == chessGame.blackCanCastleKingside && blackCanCastleQueenside == chessGame.blackCanCastleQueenside && Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn && Objects.equals(enPassantPosition, chessGame.enPassantPosition);
+        return whiteCanCastleKingside == chessGame.whiteCanCastleKingside
+                && whiteCanCastleQueenside == chessGame.whiteCanCastleQueenside
+                && blackCanCastleKingside == chessGame.blackCanCastleKingside
+                && blackCanCastleQueenside == chessGame.blackCanCastleQueenside
+                && Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn
+                && Objects.equals(enPassantPosition, chessGame.enPassantPosition);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, teamTurn, enPassantPosition, whiteCanCastleKingside, whiteCanCastleQueenside, blackCanCastleKingside, blackCanCastleQueenside);
+        return Objects.hash(board, teamTurn, enPassantPosition, whiteCanCastleKingside,
+                whiteCanCastleQueenside, blackCanCastleKingside, blackCanCastleQueenside);
     }
 
     private boolean passesThroughCheck(int row, int middle) {
