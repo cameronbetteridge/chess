@@ -218,9 +218,9 @@ public class ChessGame {
         if (piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) {
             ChessPosition startPosition = move.getStartPosition();
             if (startPosition.getRow() - move.getEndPosition().getRow() == 2) {
-                enPassantPosition = new ChessPosition(startPosition.getRow()+1, startPosition.getColumn());
-            } else if (startPosition.getRow() - move.getEndPosition().getRow() == -2) {
                 enPassantPosition = new ChessPosition(startPosition.getRow()-1, startPosition.getColumn());
+            } else if (startPosition.getRow() - move.getEndPosition().getRow() == -2) {
+                enPassantPosition = new ChessPosition(startPosition.getRow()+1, startPosition.getColumn());
             } else { enPassantPosition = null; }
         } else { enPassantPosition = null; }
     }
@@ -272,6 +272,19 @@ public class ChessGame {
         board.addPiece(startPosition, null);
     }
 
+    private boolean isEnPassantMove(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (piece.getPieceType() != ChessPiece.PieceType.PAWN) { return false; }
+        if (move.getStartPosition().getColumn() == move.getEndPosition().getColumn()) { return false; }
+        return board.getPiece(move.getEndPosition()) == null;
+    }
+
+    private void captureEnPassant(ChessMove move) {
+        int row = move.getStartPosition().getRow();
+        int col = move.getEndPosition().getColumn();
+        board.addPiece(new ChessPosition(row, col), null);
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -284,7 +297,8 @@ public class ChessGame {
         }
 
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        boolean isCastleMove = isCastlingMove(move);
+        boolean moveIsCastling = isCastlingMove(move);
+        boolean moveIsEnPassant = isEnPassantMove(move);
 
         updateEnPassantPosition(move);
         updateCastlingRights(move);
@@ -295,7 +309,8 @@ public class ChessGame {
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         }
         board.addPiece(move.getEndPosition(), piece);
-        if (isCastleMove) { castleRook(move); }
+        if (moveIsCastling) { castleRook(move); }
+        if (moveIsEnPassant) { captureEnPassant(move); }
     }
 
     private boolean canMoveTo(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board) {
