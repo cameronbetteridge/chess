@@ -1,6 +1,5 @@
 package chess;
 
-import javax.management.RuntimeErrorException;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -201,13 +200,11 @@ public class ChessGame {
         return legalMoves;
     }
 
-    /**
-     * Makes a move in a chess game
-     *
-     * @param move chess move to perform
-     * @throws InvalidMoveException if move is invalid
-     */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
+    private boolean isLegalMove(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (piece == null) { return false; }
+        TeamColor color = piece.getTeamColor();
+
         Collection<ChessMove> legalMoves = validMoves(move.getStartPosition());
         boolean moveIsValid = false;
 
@@ -217,14 +214,12 @@ public class ChessGame {
                 break;
             }
         }
-        if (!moveIsValid) {
-            throw new InvalidMoveException();
-        } else if (board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) {
-            throw new InvalidMoveException();
-        }
+        return moveIsValid && color == teamTurn;
+    }
 
+    private void updateEnPassantPosition(ChessMove move) {
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+        if (piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) {
             ChessPosition startPosition = move.getStartPosition();
             if (startPosition.getRow() - move.getEndPosition().getRow() == 2) {
                 enPassantPosition = new ChessPosition(startPosition.getRow()+1, startPosition.getColumn());
@@ -232,13 +227,57 @@ public class ChessGame {
                 enPassantPosition = new ChessPosition(startPosition.getRow()-1, startPosition.getColumn());
             } else { enPassantPosition = null; }
         } else { enPassantPosition = null; }
+    }
+
+    private void updateCastlingRights(ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (piece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+            if (piece.getTeamColor().equals(TeamColor.WHITE)) {
+                whiteCanCastleKingside = false;
+                whiteCanCastleQueenside = false;
+            } else {
+                blackCanCastleKingside = false;
+                blackCanCastleQueenside = false;
+            }
+        } else if (piece.getPieceType().equals(ChessPiece.PieceType.ROOK)) {
+            if (piece.getTeamColor().equals(TeamColor.WHITE)) {
+                if (move.getStartPosition().equals(new ChessPosition(1, 1))) {
+                    whiteCanCastleQueenside = false;
+                } else if (move.getStartPosition().equals(new ChessPosition(1, 8))) {
+                    whiteCanCastleKingside = false;
+                }
+            } else {
+                if (move.getStartPosition().equals(new ChessPosition(8, 1))) {
+                    blackCanCastleQueenside = false;
+                } else if (move.getStartPosition().equals(new ChessPosition(8, 8))) {
+                    blackCanCastleKingside = false;
+                }
+            }
+        }
+    }
+
+    /**
+     * Makes a move in a chess game
+     *
+     * @param move chess move to perform
+     * @throws InvalidMoveException if move is invalid
+     */
+    public void makeMove(ChessMove move) throws InvalidMoveException {
+        if (!isLegalMove(move)) {
+            throw new InvalidMoveException();
+        }
+
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+
+        updateEnPassantPosition(move);
+        updateCastlingRights(move);
+        teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
 
         board.addPiece(move.getStartPosition(), null);
         if (move.getPromotionPiece() != null) {
             piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
         }
         board.addPiece(move.getEndPosition(), piece);
-        teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     private boolean canMoveTo(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board) {
