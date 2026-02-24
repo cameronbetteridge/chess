@@ -1,15 +1,24 @@
 package service;
 
+import dataaccess.DataAccessException;
+import dataaccess.UserDAO;
+
+import javax.xml.crypto.Data;
+
 public class UserService {
-    private final 
+    UserDAO userDAO;
 
-    public RegisterResult register(RegisterRequest registerRequest) {
+    public UserService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
+
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
 
     }
-    public LoginResult login(LoginRequest loginRequest) {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
 
     }
-    public void logout(LogoutRequest logoutRequest) {
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
 
     }
 }

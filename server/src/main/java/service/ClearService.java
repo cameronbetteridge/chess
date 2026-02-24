@@ -1,7 +1,9 @@
 package service;
 
+import dataaccess.DataAccessException;
+
 public class ClearService {
-    public void clear() {
+    public void clear() throws DataAccessException {
 
     }
 }
