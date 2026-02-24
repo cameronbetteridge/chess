@@ -7,14 +7,14 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] board;
+    private final ChessPiece[][] board;
 
     public ChessBoard() {
         board = new ChessPiece[8][8];
     }
 
     public boolean equals(Object obj) {
-        if (obj == null | getClass() != obj.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
         ChessBoard chessBoard = (ChessBoard) obj;
