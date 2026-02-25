@@ -6,7 +6,6 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class UserService {
@@ -30,10 +29,20 @@ public class UserService {
         return new RegisterResult(request.username(), authToken);
     }
 
-//    public LoginResult login(LoginRequest request) throws DataAccessException {
-//
-//    }
-//
+    public LoginResult login(LoginRequest request) throws DataAccessException {
+        if (request.username().isEmpty() || request.password().isEmpty()) {
+            throw new DataAccessException("Error: bad request");
+        }
+        UserData user = userDAO.getUser(request.username());
+        if (!user.password().equals(request.password())) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+        String authToken = createAuthToken();
+        AuthData auth = new AuthData(authToken, request.username());
+        authDAO.createAuth(auth);
+        return new LoginResult(request.username(), authToken);
+    }
+
 //    public void logout(LogoutRequest request) throws DataAccessException {
 //
 //    }
