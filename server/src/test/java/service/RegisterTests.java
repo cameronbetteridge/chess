@@ -1,8 +1,7 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +9,14 @@ import org.junit.jupiter.api.Test;
 
 public class RegisterTests {
     private UserDAO userDAO;
+    private AuthDAO authDAO;
     private UserService userService;
 
     @BeforeEach
     public void reset() {
         userDAO = new MemoryUserDAO();
-        userService = new UserService(userDAO);
+        authDAO = new MemoryAuthDAO();
+        userService = new UserService(userDAO, authDAO);
     }
 
     @Test
@@ -43,6 +44,7 @@ public class RegisterTests {
         Assertions.assertEquals("thebest", result.username());
         Assertions.assertNotEquals("", result.authToken());
         assertUserCreated(request);
+        assertAuthCreated(request.username(), result.authToken());
     }
 
     @Test
@@ -52,6 +54,7 @@ public class RegisterTests {
         Assertions.assertEquals("thebest", result.username());
         Assertions.assertNotEquals("", result.authToken());
         assertUserCreated(request);
+        assertAuthCreated(request.username(), result.authToken());
     }
 
     @Test
@@ -66,5 +69,11 @@ public class RegisterTests {
         UserData userData = userDAO.getUser(request.username());
         UserData expected = new UserData(request.username(), request.password(), request.email());
         Assertions.assertEquals(expected, userData);
+    }
+
+    private void assertAuthCreated(String username, String authToken) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        AuthData expected = new AuthData(authToken, username);
+        Assertions.assertEquals(expected, authData);
     }
 }
