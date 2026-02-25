@@ -13,7 +13,7 @@ public class RegisterTests {
     private UserService userService;
 
     @BeforeEach
-    public void reset() {
+    public void resetTests() {
         userDAO = new MemoryUserDAO();
         authDAO = new MemoryAuthDAO();
         userService = new UserService(userDAO, authDAO);
@@ -43,34 +43,34 @@ public class RegisterTests {
         RegisterResult result = userService.register(request);
         Assertions.assertEquals("thebest", result.username());
         Assertions.assertNotEquals("", result.authToken());
-        assertUserCreated(request);
-        assertAuthCreated(request.username(), result.authToken());
+        assertUserCreatedTest(request);
+        assertAuthCreatedTest(request.username(), result.authToken());
     }
 
     @Test
-    public void goodRequest() throws DataAccessException {
+    public void goodRequestTest() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("thebest", "password", "hello@test.com");
         RegisterResult result = userService.register(request);
         Assertions.assertEquals("thebest", result.username());
         Assertions.assertNotEquals("", result.authToken());
-        assertUserCreated(request);
-        assertAuthCreated(request.username(), result.authToken());
+        assertUserCreatedTest(request);
+        assertAuthCreatedTest(request.username(), result.authToken());
     }
 
     @Test
-    public void usernameTaken() throws DataAccessException {
+    public void usernameTakenTest() throws DataAccessException {
         userDAO.createUser(new UserData("thebest", "password", "hello@test.com"));
         RegisterRequest request = new RegisterRequest("thebest", "password", "hello@test.com");
         Assertions.assertThrows(DataAccessException.class, () -> userService.register(request), "Error: already taken");
     }
 
-    private void assertUserCreated(RegisterRequest request) throws DataAccessException {
+    private void assertUserCreatedTest(RegisterRequest request) throws DataAccessException {
         UserData userData = userDAO.getUser(request.username());
         UserData expected = new UserData(request.username(), request.password(), request.email());
         Assertions.assertEquals(expected, userData);
     }
 
-    private void assertAuthCreated(String username, String authToken) throws DataAccessException {
+    private void assertAuthCreatedTest(String username, String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         AuthData expected = new AuthData(authToken, username);
         Assertions.assertEquals(expected, authData);

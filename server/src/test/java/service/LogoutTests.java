@@ -13,7 +13,7 @@ public class LogoutTests {
     private UserService userService;
 
     @BeforeEach
-    public void reset() {
+    public void resetTests() {
         userDAO = new MemoryUserDAO();
         authDAO = new MemoryAuthDAO();
         userService = new UserService(userDAO, authDAO);
@@ -26,7 +26,7 @@ public class LogoutTests {
     }
 
     @Test
-    public void goodRequest() throws DataAccessException {
+    public void goodRequestTest() throws DataAccessException {
         String authToken = "fdjskglshgdsg";
         userDAO.createUser(new UserData("thebest", "password", "email@hi.com"));
         authDAO.createAuth(new AuthData(authToken, "thebest"));
@@ -36,7 +36,7 @@ public class LogoutTests {
     }
 
     @Test
-    public void doesNotExist() throws DataAccessException {
+    public void doesNotExistTest() throws DataAccessException {
         String authToken = "fdjskglshgdsg";
         userDAO.createUser(new UserData("thebest", "password", "email@hi.com"));
         authDAO.createAuth(new AuthData("notthisauthtoken", "thebest"));

@@ -13,7 +13,7 @@ public class LoginTests {
     private UserService userService;
 
     @BeforeEach
-    public void reset() {
+    public void resetTests() {
         userDAO = new MemoryUserDAO();
         authDAO = new MemoryAuthDAO();
         userService = new UserService(userDAO, authDAO);
@@ -38,30 +38,30 @@ public class LoginTests {
     }
 
     @Test
-    public void usernameDoesNotExist() throws DataAccessException {
+    public void usernameDoesNotExistTest() throws DataAccessException {
         userDAO.createUser(new UserData("notthisone", "helloworld", "something@yes.io"));
         LoginRequest request = new LoginRequest("thebest", "password");
         Assertions.assertThrows(DataAccessException.class, () -> userService.login(request), "Error: unauthorized");
     }
 
     @Test
-    public void goodRequest() throws DataAccessException {
+    public void goodRequestTest() throws DataAccessException {
         userDAO.createUser(new UserData("thebest", "password", "hello@hi.com"));
         LoginRequest request = new LoginRequest("thebest", "password");
         LoginResult result = userService.login(request);
         Assertions.assertEquals(request.username(), result.username());
         Assertions.assertNotEquals("", result.authToken());
-        assertAuthCreated(request.username(), result.authToken());
+        assertAuthCreatedTest(request.username(), result.authToken());
     }
 
     @Test
-    public void wrongPassword() throws DataAccessException {
+    public void wrongPasswordTest() throws DataAccessException {
         userDAO.createUser(new UserData("thebest", "password", "hello@hi.com"));
         LoginRequest request = new LoginRequest("thebest", "123");
         Assertions.assertThrows(DataAccessException.class, () -> userService.login(request), "Error: unauthorized");
     }
 
-    private void assertAuthCreated(String username, String authToken) throws DataAccessException {
+    private void assertAuthCreatedTest(String username, String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
         AuthData expected = new AuthData(authToken, username);
         Assertions.assertEquals(expected, authData);
