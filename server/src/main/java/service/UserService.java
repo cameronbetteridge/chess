@@ -43,9 +43,10 @@ public class UserService {
         return new LoginResult(request.username(), authToken);
     }
 
-//    public void logout(LogoutRequest request) throws DataAccessException {
-//
-//    }
+    public void logout(LogoutRequest request) throws DataAccessException {
+        AuthData auth = authDAO.getAuth(request.authToken());
+        authDAO.deleteAuth(auth);
+    }
 
     private String createAuthToken() {
         String uuid;
