@@ -59,8 +59,7 @@ public class RegisterTests {
 
     @Test
     public void usernameTaken() throws DataAccessException {
-        RegisterRequest oldRequest = new RegisterRequest("thebest", "password", "hello@test.com");
-        userService.register(oldRequest);
+        userDAO.createUser(new UserData("thebest", "password", "hello@test.com"));
         RegisterRequest request = new RegisterRequest("thebest", "password", "hello@test.com");
         Assertions.assertThrows(DataAccessException.class, () -> userService.register(request), "Error: already taken");
     }
