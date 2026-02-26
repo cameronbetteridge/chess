@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ListTests {
     private GameService gameService;
@@ -73,6 +74,6 @@ public class ListTests {
         Assertions.assertEquals(gameData1, games.next());
         Assertions.assertEquals(gameData2, games.next());
         Assertions.assertEquals(gameData3, games.next());
-        Assertions.assertNull(games.next());
+        Assertions.assertThrows(NoSuchElementException.class, games::next);
     }
 }
