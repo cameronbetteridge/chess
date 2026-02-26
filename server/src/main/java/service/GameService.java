@@ -5,8 +5,11 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.GameData;
+import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -38,14 +41,26 @@ public class GameService {
         if (request.gameName().isEmpty()) {
             throw new DataAccessException("Error: bad request");
         }
+
         int gameID = createGameID();
         GameData game = new GameData(gameID, null, null, request.gameName(), new ChessGame());
         gameDAO.createGame(game);
+
         return new CreateGameResult(gameID);
     }
 
     public void joinGame(JoinGameRequest request) throws DataAccessException {
+        AuthData auth = authDAO.getAuth(request.authToken());
+        UserData user = userDAO.getUser(auth.userName());
+        GameData game = gameDAO.getGame(request.gameID());
 
+        if (request.playerColor().equals("WHITE") && game.whiteUsername() == null) {
+            gameDAO.updateGame(request.gameID(), new GameData(game.gameID(), user.username(), game.blackUsername(), game.gameName(), game.game()));
+        } else if (request.playerColor().equals("BLACK") && game.blackUsername() == null) {
+            gameDAO.updateGame(request.gameID(), new GameData(game.gameID(), game.whiteUsername(), user.username(), game.gameName(), game.game()));
+        } else {
+            throw new DataAccessException("Error: already taken");
+        }
     }
 
     public void clear() {
