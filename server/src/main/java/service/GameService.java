@@ -7,7 +7,7 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameData;
 
-import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -22,9 +22,16 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
-//    public ListResult list(ListRequest request) throws DataAccessException {
-//
-//    }
+    public ListResult list(ListRequest request) throws DataAccessException {
+        authDAO.getAuth(request.authToken());
+
+        ArrayList<GameDataList> gamesList = new ArrayList<>();
+        for (GameData gameData : gameDAO.listGames()) {
+            gamesList.add(new GameDataList(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName()));
+        }
+
+        return new ListResult(gamesList);
+    }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
         authDAO.getAuth(request.authToken());
