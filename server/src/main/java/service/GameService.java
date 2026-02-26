@@ -9,7 +9,6 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -64,7 +63,9 @@ public class GameService {
     }
 
     public void clear() {
-
+        userDAO.clear();
+        gameDAO.clear();
+        authDAO.clear();
     }
 
     private int createGameID() {
