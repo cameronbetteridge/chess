@@ -13,7 +13,10 @@ public class GameHandler {
     }
 
     public void createGame(Context context) throws DataAccessException {
-
+        CreateGameRequest request = new Gson().fromJson(context.body(), CreateGameRequest.class);
+        request = new CreateGameRequest(context.header("authorization"), request.gameName());
+        CreateGameResult result = service.createGame(request);
+        context.result(new Gson().toJson(result));
     }
 
     public void joinGame(Context context) throws DataAccessException {
