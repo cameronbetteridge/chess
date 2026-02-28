@@ -1,7 +1,8 @@
 package server;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.GameService;
+import service.*;
 import io.javalin.http.Context;
 
 public class GameHandler {
@@ -24,6 +25,7 @@ public class GameHandler {
     }
 
     public void clear(Context context) {
-
+        service.clear();
+        context.result("{}");
     }
 }
