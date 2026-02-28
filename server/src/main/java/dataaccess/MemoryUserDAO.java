@@ -14,14 +14,14 @@ public class MemoryUserDAO implements UserDAO {
 
     public void createUser(UserData user) throws DataAccessException {
         if (users.containsKey(user.username())) {
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException("Error: already taken", 403);
         }
         users.put(user.username(), user);
     }
 
     public UserData getUser(String username) throws DataAccessException {
         if (!users.containsKey(username)) {
-            throw new DataAccessException("Error: does not exist");
+            throw new DataAccessException("Error: unauthorized", 401);
         }
         return users.get(username);
     }

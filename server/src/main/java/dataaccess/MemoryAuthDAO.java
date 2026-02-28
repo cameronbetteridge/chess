@@ -14,21 +14,21 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public void createAuth(AuthData auth) throws DataAccessException {
         if (auths.containsKey(auth.authToken())) {
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException("Error: already taken", 500);
         }
         auths.put(auth.authToken(), auth);
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
         if (!auths.containsKey(authToken)) {
-            throw new DataAccessException("Error: does not exist");
+            throw new DataAccessException("Error: unauthorized", 401);
         }
         return auths.get(authToken);
     }
 
     public void deleteAuth(AuthData auth) throws DataAccessException {
         if (!auths.containsKey(auth.authToken())) {
-            throw new DataAccessException("Error: does not exist");
+            throw new DataAccessException("Error: unauthorized", 401);
         }
         auths.remove(auth.authToken());
     }

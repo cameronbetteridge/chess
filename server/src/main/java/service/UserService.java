@@ -19,7 +19,7 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         if (request.username().isEmpty() || request.password().isEmpty()) {
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: bad request", 400);
         }
         UserData user = new UserData(request.username(), request.password(), request.email());
         userDAO.createUser(user);
@@ -31,11 +31,11 @@ public class UserService {
 
     public LoginResult login(LoginRequest request) throws DataAccessException {
         if (request.username().isEmpty() || request.password().isEmpty()) {
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: bad request", 400);
         }
         UserData user = userDAO.getUser(request.username());
         if (!user.password().equals(request.password())) {
-            throw new DataAccessException("Error: unauthorized");
+            throw new DataAccessException("Error: unauthorized", 401);
         }
         String authToken = createAuthToken();
         AuthData auth = new AuthData(authToken, request.username());

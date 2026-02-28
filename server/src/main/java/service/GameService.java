@@ -38,7 +38,7 @@ public class GameService {
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
         authDAO.getAuth(request.authToken());
         if (request.gameName().isEmpty()) {
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException("Error: bad request", 400);
         }
 
         int gameID = createGameID();
@@ -58,7 +58,7 @@ public class GameService {
         } else if (request.playerColor().equals("BLACK") && game.blackUsername() == null) {
             gameDAO.updateGame(request.gameID(), new GameData(game.gameID(), game.whiteUsername(), user.username(), game.gameName(), game.game()));
         } else {
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException("Error: already taken", 403);
         }
     }
 

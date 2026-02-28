@@ -16,14 +16,14 @@ public class MemoryGameDAO implements GameDAO {
 
     public void createGame(GameData game) throws DataAccessException {
         if (games.containsKey(game.gameID())) {
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException("Error: bad request", 400);
         }
         games.put(game.gameID(), game);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
         if (!games.containsKey(gameID)) {
-            throw new DataAccessException("Error: doesn't exist");
+            throw new DataAccessException("Error: bad request", 400);
         }
         return games.get(gameID);
     }
@@ -34,7 +34,7 @@ public class MemoryGameDAO implements GameDAO {
 
     public void updateGame(int gameID, GameData game) throws DataAccessException {
         if (!games.containsKey(gameID)) {
-            throw new DataAccessException("Error: doesn't exist");
+            throw new DataAccessException("Error: bad request", 400);
         }
         games.put(gameID, game);
     }
