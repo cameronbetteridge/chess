@@ -20,7 +20,10 @@ public class GameHandler {
     }
 
     public void joinGame(Context context) throws DataAccessException {
-
+        JoinGameRequest request = new Gson().fromJson(context.body(), JoinGameRequest.class);
+        request = new JoinGameRequest(context.header("authorization"), request.playerColor(), request.gameID());
+        service.joinGame(request);
+        context.result("{}");
     }
 
     public void list(Context context) throws DataAccessException {

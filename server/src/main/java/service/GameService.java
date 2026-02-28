@@ -57,8 +57,10 @@ public class GameService {
             gameDAO.updateGame(request.gameID(), new GameData(game.gameID(), user.username(), game.blackUsername(), game.gameName(), game.game()));
         } else if (request.playerColor().equals("BLACK") && game.blackUsername() == null) {
             gameDAO.updateGame(request.gameID(), new GameData(game.gameID(), game.whiteUsername(), user.username(), game.gameName(), game.game()));
-        } else {
+        } else if (request.playerColor().equals("WHITE") || request.playerColor().equals("BLACK")) {
             throw new DataAccessException("Error: already taken", 403);
+        } else {
+            throw new DataAccessException("Error: bad request", 400);
         }
     }
 
