@@ -24,7 +24,9 @@ public class GameHandler {
     }
 
     public void list(Context context) throws DataAccessException {
-
+        ListRequest request = new ListRequest(context.header("authorization"));
+        ListResult result = service.list(request);
+        context.result(new Gson().toJson(result));
     }
 
     public void clear(Context context) {
