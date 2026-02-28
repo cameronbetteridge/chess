@@ -15,7 +15,9 @@ public class UserHandler {
     }
 
     public void register(Context context) throws DataAccessException {
-
+        RegisterRequest request = new Gson().fromJson(context.body(), RegisterRequest.class);
+        RegisterResult result = service.register(request);
+        context.result(new Gson().toJson(result));
     }
 
     public void login(Context context) throws DataAccessException {
