@@ -26,7 +26,7 @@ public class Server {
                 .get("/game", gameHandler::list)
                 .post("/game", gameHandler::createGame)
                 .put("/game", gameHandler::joinGame)
-                .exception(this::exceptionHandler);
+                .exception(DataAccessException.class, this::exceptionHandler);
     }
 
     public int run(int desiredPort) {
