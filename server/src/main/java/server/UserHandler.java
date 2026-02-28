@@ -25,6 +25,8 @@ public class UserHandler {
     }
 
     public void logout(Context context) throws DataAccessException {
-
+        LogoutRequest request = new LogoutRequest(context.header("authorization"));
+        service.logout(request);
+        context.result("{}");
     }
 }
