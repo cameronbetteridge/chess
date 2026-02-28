@@ -2,9 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.RegisterRequest;
-import service.RegisterResult;
-import service.UserService;
+import service.*;
 import io.javalin.http.Context;
 
 public class UserHandler {
@@ -21,7 +19,9 @@ public class UserHandler {
     }
 
     public void login(Context context) throws DataAccessException {
-
+        LoginRequest request = new Gson().fromJson(context.body(), LoginRequest.class);
+        LoginResult result = service.login(request);
+        context.result(new Gson().toJson(result));
     }
 
     public void logout(Context context) throws DataAccessException {
