@@ -43,4 +43,10 @@ public class SQLUserTests {
     public void getUserNegativeTest() throws DataAccessException {
         Assertions.assertThrows(DataAccessException.class, () -> userDAO.getUser("hi"), "Error: doesn't exist");
     }
+
+    @Test
+    public void clearTest() throws DataAccessException {
+        userDAO.clear();
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.getUser("test"));
+    }
 }
