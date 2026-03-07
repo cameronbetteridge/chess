@@ -23,17 +23,6 @@ public class MySQLUserDAO implements UserDAO {
 
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS users (
-                `username` varchar(256) NOT NULL,
-                `passwordHash` int NOT NULL,
-                `email` varchar(256),
-                PRIMARY KEY (`username`)
-            )
-            """
-    };
-
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
@@ -61,6 +50,17 @@ public class MySQLUserDAO implements UserDAO {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 500);
         }
     }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                `username` varchar(256) NOT NULL,
+                `passwordHash` int NOT NULL,
+                `email` varchar(256),
+                PRIMARY KEY (`username`)
+            )
+            """
+    };
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
