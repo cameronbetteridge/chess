@@ -78,7 +78,8 @@ public class MySQLAuthDAO implements AuthDAO {
                 `authToken` varchar(256) NOT NULL,
                 `username` varchar(256) NOT NULL,
                 PRIMARY KEY (`authToken`),
-                FOREIGN KEY (`username`) REFERENCES users(`username`)
+                FOREIGN KEY (`username`) REFERENCES users(`username`),
+                ON DELETE CASCADE
             )
             """
     };
