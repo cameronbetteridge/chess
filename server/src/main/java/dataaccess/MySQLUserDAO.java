@@ -25,15 +25,15 @@ public class MySQLUserDAO implements UserDAO {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return readUser(rs);
+                    if (!rs.next()) {
+                        throw new DataAccessException("Error: doesn't exist", 500);
                     }
+                    return readUser(rs);
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
         }
-        return null;
     }
 
     public void clear() throws DataAccessException {
