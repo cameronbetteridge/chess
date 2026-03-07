@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SQLUserTests {
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
     public SQLUserTests() throws DataAccessException {
         userDAO = new MySQLUserDAO();
@@ -30,5 +30,17 @@ public class SQLUserTests {
     public void createUserNegativeTest() throws DataAccessException {
         UserData user = new UserData("test", "123abc", "hi@test.com");
         Assertions.assertThrows(DataAccessException.class, () -> userDAO.createUser(user), "Error: already taken");
+    }
+
+    @Test
+    public void getUserPositiveTest() throws DataAccessException {
+        UserData result = userDAO.getUser("test");
+        UserData expected = new UserData("test", "wordpass", "hi@test.com");
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    public void getUserNegativeTest() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.getUser("hi"), "Error: doesn't exist");
     }
 }
