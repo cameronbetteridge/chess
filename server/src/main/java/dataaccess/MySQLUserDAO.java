@@ -37,7 +37,7 @@ public class MySQLUserDAO implements UserDAO {
     }
 
     public void clear() throws DataAccessException {
-        String statement = "TRUNCATE users";
+        String statement = "DELETE FROM users";
         executeUpdate(statement);
     }
 
