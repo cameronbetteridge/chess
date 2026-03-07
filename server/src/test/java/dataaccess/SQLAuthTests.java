@@ -25,6 +25,7 @@ public class SQLAuthTests {
 
     @Test
     public void createAuthPositiveTest() throws DataAccessException {
+        userDAO.createUser(new UserData("user1", "password", "emailTest"));
         AuthData expected = new AuthData("testToken", "user1");
         authDAO.createAuth(expected);
         AuthData result = authDAO.getAuth("testToken");
