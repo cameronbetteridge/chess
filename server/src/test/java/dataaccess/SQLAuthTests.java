@@ -58,6 +58,7 @@ public class SQLAuthTests {
 
     @Test
     public void clearTest() throws DataAccessException {
-
+        authDAO.clear();
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth("test"));
     }
 }
