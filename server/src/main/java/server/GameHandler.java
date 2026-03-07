@@ -32,7 +32,7 @@ public class GameHandler {
         context.result(new Gson().toJson(result));
     }
 
-    public void clear(Context context) {
+    public void clear(Context context) throws DataAccessException {
         service.clear();
         context.result("{}");
     }

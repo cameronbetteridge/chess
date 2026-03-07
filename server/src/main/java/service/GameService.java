@@ -64,7 +64,7 @@ public class GameService {
         }
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();
