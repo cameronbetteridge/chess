@@ -28,7 +28,7 @@ public class MySQLAuthDAO implements AuthDAO {
 
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
 
     }
 
