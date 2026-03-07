@@ -47,12 +47,13 @@ public class SQLUserTests {
 
     @Test
     public void verifyUserPositiveTest() throws DataAccessException {
-
+        Assertions.assertTrue(userDAO.verifyUser("test", "wordpass"));
+        Assertions.assertFalse(userDAO.verifyUser("test", "jsgeisg"));
     }
 
     @Test
     public void verifyUserNegativeTest() throws DataAccessException {
-
+        Assertions.assertThrows(DataAccessException.class, () -> userDAO.verifyUser("gjsgs", "wordpass"));
     }
 
     @Test
