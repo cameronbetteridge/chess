@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public class MySQLGameDAO implements GameDAO {
     public MySQLGameDAO() throws DataAccessException {
-        createTable();
+        configureDatabase();
     }
 
     public void createGame(GameData gameData) throws DataAccessException {
@@ -29,7 +29,7 @@ public class MySQLGameDAO implements GameDAO {
 
     }
 
-    private void createTable() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException {
 
     }
 }

@@ -4,7 +4,7 @@ import model.AuthData;
 
 public class MySQLAuthDAO implements AuthDAO {
     public MySQLAuthDAO() throws DataAccessException {
-        createTable();
+        configureDatabase();
     }
 
     public void createAuth(AuthData authData) throws DataAccessException {
@@ -23,7 +23,7 @@ public class MySQLAuthDAO implements AuthDAO {
 
     }
 
-    private void createTable() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException {
 
     }
 }

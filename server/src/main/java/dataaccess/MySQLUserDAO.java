@@ -4,7 +4,7 @@ import model.UserData;
 
 public class MySQLUserDAO implements UserDAO {
     public MySQLUserDAO() throws DataAccessException {
-        createTable();
+        configureDatabase();
     }
 
     public void createUser(UserData userData) throws DataAccessException {
@@ -19,7 +19,7 @@ public class MySQLUserDAO implements UserDAO {
 
     }
 
-    private void createTable() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException {
 
     }
 }
