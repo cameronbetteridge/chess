@@ -34,12 +34,14 @@ public class SQLAuthTests {
 
     @Test
     public void getAuthPositiveTest() throws DataAccessException {
-
+        AuthData expected = new AuthData("test", "test");
+        AuthData result = authDAO.getAuth("test");
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
     public void getAuthNegativeTest() throws DataAccessException {
-
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth("notHere"));
     }
 
     @Test
