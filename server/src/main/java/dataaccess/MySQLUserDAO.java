@@ -14,12 +14,14 @@ public class MySQLUserDAO implements UserDAO {
     }
 
     public void createUser(UserData userData) throws DataAccessException {
-
+        String statement = "INSERT INTO users (username, passwordHash, email) values (?, ?, ?)";
+        String passwordHash = hashPassword(userData.password());
+        executeUpdate(statement, userData.username(), passwordHash, userData.email());
     }
 
     public UserData getUser(String username) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            var statement = "SELECT passwordHash, email FROM users WHERE username=?";
+            var statement = "SELECT username, passwordHash, email FROM users WHERE username = ?";
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -39,13 +41,13 @@ public class MySQLUserDAO implements UserDAO {
         executeUpdate(statement);
     }
 
-    public String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
-
     public boolean verifyUser(String username, String providedPassword) throws DataAccessException {
         UserData user = getUser(username);
         return BCrypt.checkpw(providedPassword, user.password());
+    }
+
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
