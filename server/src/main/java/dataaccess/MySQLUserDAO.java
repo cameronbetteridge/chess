@@ -19,8 +19,9 @@ public class MySQLUserDAO implements UserDAO {
 
     }
 
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE users";
+        executeUpdate(statement);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
