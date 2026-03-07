@@ -75,8 +75,7 @@ public class MySQLGameDAO implements GameDAO {
                 `game` varchar(2000) NOT NULL,
                 PRIMARY KEY (`id`),
                 FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`),
-                FOREIGN KEY (`blackUsername`) REFERENCES users(`username`),
-                ON DELETE CASCADE
+                FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE CASCADE
             )
             """
     };
