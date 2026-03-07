@@ -46,12 +46,14 @@ public class SQLAuthTests {
 
     @Test
     public void deleteAuthPositiveTest() throws DataAccessException {
+        authDAO.deleteAuth(authDAO.getAuth("test"));
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.getAuth("test"));
 
     }
 
     @Test
     public void deleteAuthNegativeTest() throws DataAccessException {
-
+        Assertions.assertThrows(DataAccessException.class, () -> new AuthData("notHere", "blah"));
     }
 
     @Test
