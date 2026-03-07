@@ -26,6 +26,11 @@ public class MemoryUserDAO implements UserDAO {
         return users.get(username);
     }
 
+    public boolean verifyUser(String username, String password) throws DataAccessException {
+        UserData user = getUser(username);
+        return user.password().equals(password);
+    }
+
     public void clear() {
         users.clear();
     }
