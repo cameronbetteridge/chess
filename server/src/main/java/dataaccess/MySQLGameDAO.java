@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.Connection;
@@ -17,7 +18,9 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     public int createGame(GameData gameData) throws DataAccessException {
-
+        String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        String gameJson = new Gson().toJson(gameData.game());
+        return executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameJson);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
@@ -66,7 +69,7 @@ public class MySQLGameDAO implements GameDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS games (
                 `id` int NOT NULL AUTO_INCREMENT,
                 `whiteUsername` varchar(256),
                 `blackUsername` varchar(256),
