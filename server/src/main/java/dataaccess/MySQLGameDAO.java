@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -26,7 +27,7 @@ public class MySQLGameDAO implements GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID = ?";
+            var statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM games WHERE id = ?";
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -41,8 +42,21 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
-    public Collection<GameData> listGames() {
-
+    public Collection<GameData> listGames() throws DataAccessException {
+        Collection<GameData> result = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, whiteUsername, blackUsername, gameName, game FROM games";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+        }
+        return result;
     }
 
     public void updateGame(int gameID, GameData newGame) throws DataAccessException {
@@ -54,7 +68,7 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
-        int gameID = rs.getInt("gameID");
+        int gameID = rs.getInt("id");
         String whiteUsername = rs.getString("whiteUsername");
         String blackUsername = rs.getString("blackUsername");
         String gameName = rs.getString("gameName");

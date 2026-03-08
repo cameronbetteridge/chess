@@ -41,10 +41,8 @@ public class GameService {
             throw new DataAccessException("Error: bad request", 400);
         }
 
-        int gameID = createGameID();
-        GameData game = new GameData(gameID, null, null, request.gameName(), new ChessGame());
-        gameDAO.createGame(game);
-
+        GameData game = new GameData(-1, null, null, request.gameName(), new ChessGame());
+        int gameID = gameDAO.createGame(game);
         return new CreateGameResult(gameID);
     }
 
@@ -68,23 +66,5 @@ public class GameService {
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();
-    }
-
-    private int createGameID() {
-        int id;
-        boolean unique;
-        Random random = new Random();
-        Collection<GameData> games = gameDAO.listGames();
-        do {
-            id = Math.abs(random.nextInt());
-            unique = true;
-            for (GameData game : games) {
-                if (game.gameID() == id) {
-                    unique = false;
-                    break;
-                }
-            }
-        } while (!unique);
-        return id;
     }
 }
