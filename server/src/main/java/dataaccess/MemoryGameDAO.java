@@ -29,7 +29,7 @@ public class MemoryGameDAO implements GameDAO {
         return games.get(gameID);
     }
 
-    public Collection<GameData> listGames() {
+    public Collection<GameData> listGames() throws DataAccessException {
         return new ArrayList<>(games.values());
     }
 
