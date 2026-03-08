@@ -11,12 +11,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class MySQLGameDAO implements GameDAO {
     public MySQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        String[] createStatements = {
+                """
+            CREATE TABLE IF NOT EXISTS games (
+                `id` int NOT NULL AUTO_INCREMENT,
+                `whiteUsername` varchar(256),
+                `blackUsername` varchar(256),
+                `gameName` varchar(256) NOT NULL,
+                `game` varchar(2000) NOT NULL,
+                PRIMARY KEY (`id`),
+                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE CASCADE,
+                FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE CASCADE
+            )
+            """
+        };
+        DatabaseManager.configureDatabase(createStatements);
     }
 
     public int createGame(GameData gameData) throws DataAccessException {
@@ -85,31 +96,4 @@ public class MySQLGameDAO implements GameDAO {
         return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS games (
-                `id` int NOT NULL AUTO_INCREMENT,
-                `whiteUsername` varchar(256),
-                `blackUsername` varchar(256),
-                `gameName` varchar(256) NOT NULL,
-                `game` varchar(2000) NOT NULL,
-                PRIMARY KEY (`id`),
-                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE CASCADE,
-                FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE CASCADE
-            )
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection connection = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = connection.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Error configuring database: %s", ex.getMessage()), 500);
-        }
-    }
 }
