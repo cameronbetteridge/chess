@@ -14,11 +14,12 @@ public class MemoryGameDAO implements GameDAO {
         games = new HashMap<>();
     }
 
-    public void createGame(GameData game) throws DataAccessException {
+    public int createGame(GameData game) throws DataAccessException {
         if (games.containsKey(game.gameID())) {
             throw new DataAccessException("Error: bad request", 400);
         }
         games.put(game.gameID(), game);
+        return game.gameID();
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

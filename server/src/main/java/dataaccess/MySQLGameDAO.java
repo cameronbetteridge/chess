@@ -16,7 +16,7 @@ public class MySQLGameDAO implements GameDAO {
         configureDatabase();
     }
 
-    public void createGame(GameData gameData) throws DataAccessException {
+    public int createGame(GameData gameData) throws DataAccessException {
 
     }
 
