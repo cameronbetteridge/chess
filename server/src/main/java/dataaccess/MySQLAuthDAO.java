@@ -38,11 +38,14 @@ public class MySQLAuthDAO implements AuthDAO {
     }
 
     public void deleteAuth(AuthData authData) throws DataAccessException {
-
+        getAuth(authData.authToken());
+        String statement = "DELETE FROM auths WHERE authToken = ? AND username = ?";
+        executeUpdate(statement, authData.authToken(), authData.userName());
     }
 
     public void clear() throws DataAccessException {
-
+        String statement = "DELETE FROM auths";
+        executeUpdate(statement);
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException {

@@ -59,7 +59,8 @@ public class SQLAuthTests {
 
     @Test
     public void deleteAuthNegativeTest() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> new AuthData("notHere", "blah"));
+        AuthData auth = new AuthData("doesNotExist", "blah");
+        Assertions.assertThrows(DataAccessException.class, () -> authDAO.deleteAuth(auth));
     }
 
     @Test
