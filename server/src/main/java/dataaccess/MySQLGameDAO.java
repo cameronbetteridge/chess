@@ -60,7 +60,10 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     public void updateGame(int gameID, GameData newGame) throws DataAccessException {
-
+        getGame(gameID);
+        String statement = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE id = ?";
+        String gameJson = new Gson().toJson(newGame.game());
+        executeUpdate(statement, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), gameJson, gameID);
     }
 
     public void clear() throws DataAccessException {
