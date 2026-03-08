@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.GameData;
-import model.UserData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
