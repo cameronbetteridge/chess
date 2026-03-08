@@ -19,7 +19,7 @@ public class MySQLUserDAO implements UserDAO {
         } catch (DataAccessException ex) {
             String statement = "INSERT INTO users (username, passwordHash, email) values (?, ?, ?)";
             String passwordHash = hashPassword(userData.password());
-            executeUpdate(statement, userData.username(), passwordHash, userData.email());
+            DatabaseManager.executeUpdate(statement, userData.username(), passwordHash, userData.email());
             return;
         }
         throw new DataAccessException("Error: already taken", 403);
@@ -46,7 +46,7 @@ public class MySQLUserDAO implements UserDAO {
 
     public void clear() throws DataAccessException {
         String statement = "DELETE FROM users";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
     }
 
     public boolean verifyUser(String username, String providedPassword) throws DataAccessException {
@@ -63,27 +63,6 @@ public class MySQLUserDAO implements UserDAO {
         String passwordHash = rs.getString("passwordHash");
         String email = rs.getString("email");
         return new UserData(username, passwordHash, email);
-    }
-
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    switch (param) {
-                        case String p -> ps.setString(i + 1, p);
-                        case Integer p -> ps.setInt(i + 1, p);
-                        case UserData p -> ps.setString(i + 1, p.toString());
-                        case null -> ps.setNull(i + 1, NULL);
-                        default -> {
-                        }
-                    }
-                }
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()), 500);
-        }
     }
 
     private final String[] createStatements = {

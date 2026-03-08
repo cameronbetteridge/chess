@@ -17,7 +17,7 @@ public class MySQLAuthDAO implements AuthDAO {
 
     public void createAuth(AuthData authData) throws DataAccessException {
         String statement = "INSERT INTO auths (authToken, username) values (?, ?)";
-        executeUpdate(statement, authData.authToken(), authData.userName());
+        DatabaseManager.executeUpdate(statement, authData.authToken(), authData.userName());
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
@@ -42,39 +42,18 @@ public class MySQLAuthDAO implements AuthDAO {
     public void deleteAuth(AuthData authData) throws DataAccessException {
         getAuth(authData.authToken());
         String statement = "DELETE FROM auths WHERE authToken = ? AND username = ?";
-        executeUpdate(statement, authData.authToken(), authData.userName());
+        DatabaseManager.executeUpdate(statement, authData.authToken(), authData.userName());
     }
 
     public void clear() throws DataAccessException {
         String statement = "DELETE FROM auths";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException {
         String authToken = rs.getString("authToken");
         String username = rs.getString("username");
         return new AuthData(authToken, username);
-    }
-
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    switch (param) {
-                        case String p -> ps.setString(i + 1, p);
-                        case Integer p -> ps.setInt(i + 1, p);
-                        case AuthData p -> ps.setString(i + 1, p.toString());
-                        case null -> ps.setNull(i + 1, NULL);
-                        default -> {
-                        }
-                    }
-                }
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()), 500);
-        }
     }
 
     private final String[] createStatements = {

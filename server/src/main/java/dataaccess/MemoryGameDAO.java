@@ -9,16 +9,16 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     private final Map<Integer, GameData> games;
-    private int id_counter;
+    private int idCounter;
 
     public MemoryGameDAO() {
         games = new HashMap<>();
-        id_counter = 1;
+        idCounter = 1;
     }
 
     public int createGame(GameData game) throws DataAccessException {
-        int gameID = id_counter;
-        id_counter++;
+        int gameID = idCounter;
+        idCounter++;
         game = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
         games.put(gameID, game);
         return gameID;
@@ -44,6 +44,6 @@ public class MemoryGameDAO implements GameDAO {
 
     public void clear() {
         games.clear();
-        id_counter = 1;
+        idCounter = 1;
     }
 }
