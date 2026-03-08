@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
@@ -24,7 +25,20 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-
+        try (Connection connection = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID = ?";
+            try (PreparedStatement ps = connection.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new DataAccessException("Error: doesn't exist", 500);
+                    }
+                    return readGame(rs);
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+        }
     }
 
     public Collection<GameData> listGames() {
@@ -37,6 +51,16 @@ public class MySQLGameDAO implements GameDAO {
 
     public void clear() throws DataAccessException {
 
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        int gameID = rs.getInt("gameID");
+        String whiteUsername = rs.getString("whiteUsername");
+        String blackUsername = rs.getString("blackUsername");
+        String gameName = rs.getString("gameName");
+        String gameJson = rs.getString("game");
+        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
