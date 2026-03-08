@@ -70,8 +70,8 @@ public class SQLGameTests {
         game1 = new GameData(gameID1, null, null, "game1", new ChessGame());
         GameData game2 = gameDAO.getGame(gameID);
         Collection<GameData> expected = new ArrayList<>();
-        expected.add(game1);
         expected.add(game2);
+        expected.add(game1);
         Collection<GameData> result = gameDAO.listGames();
         Assertions.assertEquals(expected, result);
     }

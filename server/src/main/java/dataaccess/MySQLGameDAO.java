@@ -64,7 +64,10 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     public void clear() throws DataAccessException {
-
+        String statement = "DELETE FROM games";
+        executeUpdate(statement);
+        statement = "AlTER TABLE games AUTO_INCREMENT = 1";
+        executeUpdate(statement);
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
