@@ -32,13 +32,15 @@ public class MySQLGameDAO implements GameDAO {
                 ps.setInt(1, gameID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
-                        throw new DataAccessException("Error: doesn't exist", 500);
+                        throw new DataAccessException("Error: doesn't exist", 400);
                     }
                     return readGame(rs);
                 }
             }
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()), e.toHttpStatusCode());
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()), 500);
         }
     }
 
@@ -54,7 +56,7 @@ public class MySQLGameDAO implements GameDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()), 401);
         }
         return result;
     }
@@ -120,7 +122,7 @@ public class MySQLGameDAO implements GameDAO {
                 `gameName` varchar(256) NOT NULL,
                 `game` varchar(2000) NOT NULL,
                 PRIMARY KEY (`id`),
-                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`),
+                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE CASCADE,
                 FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE CASCADE
             )
             """

@@ -27,13 +27,15 @@ public class MySQLAuthDAO implements AuthDAO {
                 ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
-                        throw new DataAccessException("Error: doesn't exist", 500);
+                        throw new DataAccessException("Error: doesn't exist", 401);
                     }
                     return readAuth(rs);
                 }
             }
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()), e.toHttpStatusCode());
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()), 500);
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()), 500);
         }
     }
 
@@ -71,7 +73,7 @@ public class MySQLAuthDAO implements AuthDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 500);
+            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()), 500);
         }
     }
 

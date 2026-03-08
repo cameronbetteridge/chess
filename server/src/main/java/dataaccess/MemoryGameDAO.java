@@ -9,17 +9,19 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     private final Map<Integer, GameData> games;
+    private int id_counter;
 
     public MemoryGameDAO() {
         games = new HashMap<>();
+        id_counter = 1;
     }
 
     public int createGame(GameData game) throws DataAccessException {
-        if (games.containsKey(game.gameID())) {
-            throw new DataAccessException("Error: bad request", 400);
-        }
-        games.put(game.gameID(), game);
-        return game.gameID();
+        int gameID = id_counter;
+        id_counter++;
+        game = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+        games.put(gameID, game);
+        return gameID;
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
@@ -42,5 +44,6 @@ public class MemoryGameDAO implements GameDAO {
 
     public void clear() {
         games.clear();
+        id_counter = 1;
     }
 }

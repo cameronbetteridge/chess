@@ -71,12 +71,13 @@ public class CreateGameTests {
         GameData existingGame = new GameData(8, null, null, "mygame", new ChessGame());
         userDAO.createUser(new UserData("test", "password", "email@hi.us"));
         authDAO.createAuth(new AuthData(authToken, "test"));
-        gameDAO.createGame(existingGame);
+        int existingGameID = gameDAO.createGame(existingGame);
+        existingGame = new GameData(existingGameID, null, null, "mygame", new ChessGame());
         CreateGameRequest request = new CreateGameRequest(authToken, "mygame");
         CreateGameResult result = gameService.createGame(request);
         GameData game = gameDAO.getGame(result.gameID());
         GameData expected = new GameData(result.gameID(), null, null, "mygame", new ChessGame());
         Assertions.assertEquals(expected, game);
-        Assertions.assertEquals(existingGame, gameDAO.getGame(8));
+        Assertions.assertEquals(existingGame, gameDAO.getGame(existingGameID));
     }
 }

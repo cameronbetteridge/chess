@@ -59,8 +59,8 @@ public class JoinGameTests {
         String authToken = "iiiisdhsgs";
         userDAO.createUser(new UserData("test", "password", "email@hi.us"));
         authDAO.createAuth(new AuthData(authToken, "test"));
-        gameDAO.createGame(new GameData(0, null, null, "game1", new ChessGame()));
-        JoinGameRequest request = new JoinGameRequest(authToken, "WHITE", 1);
+        int gameID = gameDAO.createGame(new GameData(0, null, null, "game1", new ChessGame()));
+        JoinGameRequest request = new JoinGameRequest(authToken, "WHITE", gameID+1);
         Assertions.assertThrows(DataAccessException.class, () -> gameService.joinGame(request), "Error: game doesn't exist");
     }
 
@@ -81,12 +81,12 @@ public class JoinGameTests {
         userDAO.createUser(new UserData("test", "password", "email@hi.us"));
         authDAO.createAuth(new AuthData(authToken, "test"));
         ChessGame chessGame = new ChessGame();
-        gameDAO.createGame(new GameData(0, null, null, "game1", chessGame));
-        JoinGameRequest request = new JoinGameRequest(authToken, "WHITE", 0);
+        int gameID = gameDAO.createGame(new GameData(0, null, null, "game1", chessGame));
+        JoinGameRequest request = new JoinGameRequest(authToken, "WHITE", gameID);
         gameService.joinGame(request);
 
-        GameData game = gameDAO.getGame(0);
-        GameData expected = new GameData(0, "test", null, "game1", chessGame);
+        GameData game = gameDAO.getGame(gameID);
+        GameData expected = new GameData(gameID, "test", null, "game1", chessGame);
         Assertions.assertEquals(expected, game);
     }
 }

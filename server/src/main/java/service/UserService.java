@@ -33,8 +33,7 @@ public class UserService {
         if (request.username().isEmpty() || request.password().isEmpty()) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        UserData user = userDAO.getUser(request.username());
-        if (!user.password().equals(request.password())) {
+        if (!userDAO.verifyUser(request.username(), request.password())) {
             throw new DataAccessException("Error: unauthorized", 401);
         }
         String authToken = createAuthToken();
