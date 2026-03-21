@@ -1,10 +1,15 @@
 package client;
 
-import chess.*;
+import ui.BoardPrinter;
+import ui.ClientUI;
 
 public class ClientMain {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+        ServerFacade serverFacade = new ServerFacade();
+        BoardPrinter boardPrinter = new BoardPrinter();
+        ClientUI clientUI = new ClientUI(serverFacade, boardPrinter);
+        System.out.println("Welcome to 240 Chess! Type Help to get started.");
+        clientUI.prelogin();
+        System.out.println("Goodbye!");
     }
 }
