@@ -1,6 +1,6 @@
 package client;
 
-import chess.ChessGame;
+import model.GameData;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ public class ServerFacade {
 
     }
 
-    public ArrayList<ChessGame> listGames(String authToken) {
+    public ArrayList<GameData> listGames(String authToken) {
 
     }
 

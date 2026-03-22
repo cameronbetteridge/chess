@@ -1,19 +1,26 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import client.ServerFacade;
+import model.GameData;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ClientUI {
     ServerFacade serverFacade;
     BoardPrinter boardPrinter;
     String authToken;
+    Map<Integer,Integer> gameIDs;
 
     public ClientUI(ServerFacade serverFacade, BoardPrinter boardPrinter) {
         this.serverFacade = serverFacade;
         this.boardPrinter = boardPrinter;
         authToken = null;
+        gameIDs = new HashMap<>();
     }
 
     public void mainLoop() {
@@ -23,11 +30,12 @@ public class ClientUI {
             if (authToken == null) {
                 done = preLogin(args);
             } else {
-                postLogin(authToken, args);
+                postLogin(args);
             }
             if (done) {
                 return;
             }
+            System.out.println();
         }
     }
 
@@ -58,13 +66,24 @@ public class ClientUI {
             default:
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
-
-        System.out.println();
         return false;
     }
 
-    private void postLogin(String authToken, String[] args) {
-
+    private void postLogin(String[] args) {
+        switch (args[0]) {
+            case "help":
+                help(true);
+            case "logout":
+                serverFacade.logout(authToken);
+                authToken = null;
+                System.out.println("Logged out successfully.");
+            case "create":
+                int gameID = serverFacade.createGame(authToken, args[1]);
+                gameIDs.put(gameIDs.size()+1, gameID);
+                System.out.println("Created game '" + args[1] + "'.");
+            case "list":
+                list();
+        }
     }
 
     private void gameplay() {
@@ -73,5 +92,37 @@ public class ClientUI {
 
     private void help(boolean loggedIn) {
 
+    }
+
+    private void list() {
+        ArrayList<GameData> chessGames = serverFacade.listGames(authToken);
+        for (int gameNum : gameIDs.keySet()) {
+            GameData gameData = chessGames.get(gameIDs.get(gameNum));
+            printGame(gameNum, gameData);
+        }
+    }
+
+    private void printGame(int gameNum, GameData gameData) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(gameNum);
+        builder.append(". ");
+        builder.append(gameData.gameName());
+        builder.append(" - ");
+
+        if (gameData.whiteUsername() == null) {
+            builder.append("<available>");
+        } else {
+            builder.append(gameData.whiteUsername());
+        }
+
+        builder.append(" versus ");
+
+        if (gameData.blackUsername() == null) {
+            builder.append("<available>");
+        } else {
+            builder.append(gameData.blackUsername());
+        }
+
+        System.out.println(builder.toString());
     }
 }
