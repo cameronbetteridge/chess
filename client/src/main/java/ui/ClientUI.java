@@ -45,7 +45,9 @@ public class ClientUI {
         } else {
             System.out.print("[LOGGED OUT] >>> ");
         }
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN);
         String command = scanner.nextLine().toLowerCase();
+        System.out.println(EscapeSequences.RESET_TEXT_COLOR);
         return command.split(" ");
     }
 
@@ -112,6 +114,12 @@ public class ClientUI {
         builder.append(gameNum);
         builder.append(". ");
         builder.append(gameData.gameName());
+
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        System.out.println(builder);
+        builder = new StringBuilder();
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
+
         builder.append(" - ");
 
         if (gameData.whiteUsername() == null) {
