@@ -1,7 +1,6 @@
 package ui;
 
 import chess.ChessBoard;
-import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 
@@ -83,6 +82,10 @@ public class ClientUI {
                 System.out.println("Created game '" + args[1] + "'.");
             case "list":
                 list();
+            case "join":
+                gameplay();
+            case "observe":
+                gameplay();
         }
     }
 
@@ -123,6 +126,6 @@ public class ClientUI {
             builder.append(gameData.blackUsername());
         }
 
-        System.out.println(builder.toString());
+        System.out.println(builder);
     }
 }
