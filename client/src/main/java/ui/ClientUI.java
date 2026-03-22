@@ -86,6 +86,8 @@ public class ClientUI {
                 gameplay();
             case "observe":
                 gameplay();
+            default:
+                System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
     }
 
