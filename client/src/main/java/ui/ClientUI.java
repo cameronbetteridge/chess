@@ -118,24 +118,22 @@ public class ClientUI {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
         System.out.println(builder);
         builder = new StringBuilder();
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
 
         builder.append(" - ");
-
         if (gameData.whiteUsername() == null) {
             builder.append("<available>");
         } else {
             builder.append(gameData.whiteUsername());
         }
-
         builder.append(" versus ");
-
         if (gameData.blackUsername() == null) {
             builder.append("<available>");
         } else {
             builder.append(gameData.blackUsername());
         }
 
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
         System.out.println(builder);
+        System.out.println(EscapeSequences.RESET_TEXT_COLOR);
     }
 }
