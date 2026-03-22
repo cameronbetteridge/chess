@@ -9,7 +9,6 @@ public class ClientMain {
         BoardPrinter boardPrinter = new BoardPrinter();
         ClientUI clientUI = new ClientUI(serverFacade, boardPrinter);
         System.out.println("Welcome to 240 Chess! Type Help to get started.");
-        clientUI.prelogin();
-        System.out.println("Goodbye!");
+        clientUI.mainLoop();
     }
 }
