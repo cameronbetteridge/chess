@@ -1,8 +1,10 @@
 package client;
 
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -46,14 +48,50 @@ public class ServerFacade {
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
-
+        HttpRequest.Builder request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + path))
+                .method(method, makeRequestBody(body));
+        if (body != null) {
+            request.setHeader("Content-Type", "application/json");
+        }
+        return request.build();
     }
 
-    private HttpResponse<String> sendRequest(HttpRequest request) {
-
+    private HttpRequest.BodyPublisher makeRequestBody(Object request) {
+        if (request != null) {
+            return HttpRequest.BodyPublishers.ofString(new Gson().toJson(request));
+        } else {
+            return HttpRequest.BodyPublishers.noBody();
+        }
     }
 
-    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) {
+    private HttpResponse<String> sendRequest(HttpRequest request) throws Exception {
+        try {
+            return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception ex) {
+            throw new Exception("Error: Something went wrong sending the http request");
+        }
+    }
 
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
+        int status = response.statusCode();
+        if (!isSuccessful(status)) {
+            String body = response.body();
+            if (body != null) {
+                throw new Exception(body);
+            }
+
+            throw new Exception("Error: Unsuccessful status: " + status);
+        }
+
+        if (responseClass != null) {
+            return new Gson().fromJson(response.body(), responseClass);
+        }
+
+        return null;
+    }
+
+    private boolean isSuccessful(int status) {
+        return status / 100 == 2;
     }
 }
