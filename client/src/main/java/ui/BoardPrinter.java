@@ -76,7 +76,9 @@ public class BoardPrinter {
     }
 
     private void printRowLabel(int rowNum) {
-
+        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        System.out.print(' ' + rowNum + ' ');
     }
 
     private void finishLine() {
