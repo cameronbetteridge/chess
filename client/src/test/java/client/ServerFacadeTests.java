@@ -91,22 +91,40 @@ public class ServerFacadeTests {
 
     @Test
     public void createPositiveTest() {
-
+        int gameID = serverFacade.createGame(testAuth, "newGame");
+        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+        Assertions.assertEquals(2, games.size());
+        GameData game = games.get(1);
+        Assertions.assertEquals(gameID, game.gameID());
+        Assertions.assertEquals("newGame", game.gameName());
+        Assertions.assertNull(game.blackUsername());
+        Assertions.assertNull(game.whiteUsername());
+        Assertions.assertEquals(new ChessGame(), game.game());
     }
 
     @Test
     public void createNegativeTest() {
-
+        Assertions.assertThrows(Exception.class, () -> serverFacade.createGame("notAnAuthToken", "newGame"));
     }
 
     @Test
     public void joinPositiveTest() {
-
+        String authToken = serverFacade.login("test2", "test2password").authToken();
+        serverFacade.joinGame(authToken, testGame, "BLACK");
+        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+        Assertions.assertEquals(1, games.size());
+        GameData game = games.getFirst();
+        Assertions.assertEquals(testGame, game.gameID());
+        Assertions.assertEquals("testGame", game.gameName());
+        Assertions.assertEquals("test2", game.blackUsername());
+        Assertions.assertEquals("test1", game.whiteUsername());
+        Assertions.assertEquals(new ChessGame(), game.game());
     }
 
     @Test
     public void joinNegativeTest() {
-
+        String authToken = serverFacade.login("test2", "test2password").authToken();
+        Assertions.assertThrows(Exception.class, () -> serverFacade.joinGame(authToken, testGame, "WHITE"));
     }
 
     @Test
