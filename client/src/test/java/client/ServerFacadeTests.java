@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -86,7 +85,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("testGame", game.gameName());
         Assertions.assertNull(game.blackUsername());
         Assertions.assertEquals("test1", game.whiteUsername());
-        Assertions.assertEquals(null, game.game());
+        Assertions.assertNull(game.game());
     }
 
     @Test
@@ -104,7 +103,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("newGame", game.gameName());
         Assertions.assertNull(game.blackUsername());
         Assertions.assertNull(game.whiteUsername());
-        Assertions.assertEquals(null, game.game());
+        Assertions.assertNull(game.game());
     }
 
     @Test
@@ -123,7 +122,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("testGame", game.gameName());
         Assertions.assertEquals("test2", game.blackUsername());
         Assertions.assertEquals("test1", game.whiteUsername());
-        Assertions.assertEquals(null, game.game());
+        Assertions.assertNull(game.game());
     }
 
     @Test

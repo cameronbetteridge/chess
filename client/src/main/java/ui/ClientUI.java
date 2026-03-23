@@ -71,6 +71,9 @@ public class ClientUI {
     }
 
     private void login(String[] args) {
+        if (notEnoughArgs(args.length, 3)) {
+            return;
+        }
         try {
             authToken = serverFacade.login(args[1], args[2]).authToken();
             System.out.println("Logged in as " + args[1]);
@@ -80,6 +83,9 @@ public class ClientUI {
     }
 
     private void register(String[] args) {
+        if (notEnoughArgs(args.length, 4)) {
+            return;
+        }
         UserData userData = new UserData(args[1], args[2], args[3]);
         try {
             authToken = serverFacade.register(userData).authToken();
@@ -101,24 +107,41 @@ public class ClientUI {
             case "logout" ->
                 logout();
             case "create" ->
-                create(args[1]);
+                create(args);
             case "list" ->
                 list();
             case "join" ->
-                gameplay(args[2].equals("black"));
+                join(args);
             case "observe" ->
-                gameplay(false);
+                observe(args);
             default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
     }
 
-    private void create(String gameName) {
+    private void join(String[] args) {
+        if (notEnoughArgs(args.length, 3)) {
+            return;
+        }
+        gameplay(args[2].equals("black"));
+    }
+
+    private void observe(String[] args) {
+        if (notEnoughArgs(args.length, 2)) {
+            return;
+        }
+        gameplay(false);
+    }
+
+    private void create(String[] args) {
+        if (notEnoughArgs(args.length, 2)) {
+            return;
+        }
         try {
-            int gameID = serverFacade.createGame(authToken, gameName).gameID();
+            int gameID = serverFacade.createGame(authToken, args[1]).gameID();
             gameIDs.put(gameIDs.size() + 1, gameID);
-            System.out.println("Created game '" + gameName + "'.");
+            System.out.println("Created game '" + args[1] + "'.");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -200,5 +223,13 @@ public class ClientUI {
         System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
         System.out.print(" - " + description);
         System.out.println(EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    private boolean notEnoughArgs(int numArgs, int requiredArgs) {
+        if (numArgs < requiredArgs) {
+            System.out.println("That's not right. Type Help for more information.");
+            return true;
+        }
+        return false;
     }
 }

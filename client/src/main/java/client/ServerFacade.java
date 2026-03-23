@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -94,9 +95,16 @@ public class ServerFacade {
         try {
             return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new Exception("Error: Something went wrong sending the http request: " + ex.getMessage());
+            throw new Exception("Something went wrong. Please try again later.");
         }
     }
+
+    private final Map<Integer, String> statusCodeMessages = Map.of(
+            400, "That's not right.",
+            401, "Incorrect username or password.",
+            403, "Already taken.",
+            500, "Something went wrong. Please try again later."
+    );
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
         int status = response.statusCode();
@@ -106,7 +114,7 @@ public class ServerFacade {
                 throw new Exception(body);
             }
 
-            throw new Exception("Error: Unsuccessful status: " + status);
+            throw new Exception(statusCodeMessages.get(status));
         }
 
         if (responseClass != null) {
