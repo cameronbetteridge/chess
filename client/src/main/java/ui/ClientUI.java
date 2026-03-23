@@ -150,6 +150,10 @@ public class ClientUI {
     }
 
     private void printCommand(String command, String description) {
-
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        System.out.println(command);
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
+        System.out.println(" - " + description);
+        System.out.println(EscapeSequences.RESET_TEXT_COLOR);
     }
 }
