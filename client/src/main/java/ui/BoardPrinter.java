@@ -21,6 +21,9 @@ public class BoardPrinter {
             printRow(pieces, startBlackSquare, rowNum);
             startBlackSquare = !startBlackSquare;
         }
+
+        printColumnLabels(blackPlayer);
+        finishLine();
     }
 
     private ChessPiece[] getPieces(ChessBoard board, boolean blackPlayer, int rowNum) {
@@ -65,7 +68,7 @@ public class BoardPrinter {
     }
 
     private void finishLine() {
-
+        System.out.println(EscapeSequences.RESET_BG_COLOR);
     }
 
     private void reversePieces(ChessPiece[] pieces) {

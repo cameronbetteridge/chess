@@ -47,7 +47,7 @@ public class ClientUI {
         }
         System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN);
         String command = scanner.nextLine().toLowerCase();
-        System.out.println(EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
         return command.split(" ");
     }
 
@@ -127,8 +127,8 @@ public class ClientUI {
         builder.append(". ");
         builder.append(gameData.gameName());
 
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
-        System.out.println(builder);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        System.out.print(builder);
         builder = new StringBuilder();
 
         builder.append(" - ");
@@ -144,16 +144,16 @@ public class ClientUI {
             builder.append(gameData.blackUsername());
         }
 
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
-        System.out.println(builder);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
+        System.out.print(builder);
         System.out.println(EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private void printCommand(String command, String description) {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE);
-        System.out.println(command);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
-        System.out.println(" - " + description);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE);
+        System.out.print(command);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
+        System.out.print(" - " + description);
         System.out.println(EscapeSequences.RESET_TEXT_COLOR);
     }
 }
