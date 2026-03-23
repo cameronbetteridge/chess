@@ -78,8 +78,8 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listPositiveTest() {
-        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+    public void listPositiveTest() throws Exception {
+        ArrayList<GameData> games = serverFacade.listGames(testAuth).games();
         Assertions.assertEquals(1, games.size());
         GameData game = games.getFirst();
         Assertions.assertEquals(testGame, game.gameID());
@@ -95,9 +95,9 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void createPositiveTest() {
+    public void createPositiveTest() throws Exception {
         int gameID = serverFacade.createGame(testAuth, "newGame");
-        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+        ArrayList<GameData> games = serverFacade.listGames(testAuth).games();
         Assertions.assertEquals(2, games.size());
         GameData game = games.get(1);
         Assertions.assertEquals(gameID, game.gameID());
@@ -116,7 +116,7 @@ public class ServerFacadeTests {
     public void joinPositiveTest() throws Exception {
         String authToken = serverFacade.login("test2", "test2password").authToken();
         serverFacade.joinGame(authToken, testGame, "BLACK");
-        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+        ArrayList<GameData> games = serverFacade.listGames(testAuth).games();
         Assertions.assertEquals(1, games.size());
         GameData game = games.getFirst();
         Assertions.assertEquals(testGame, game.gameID());
@@ -139,7 +139,7 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> serverFacade.login("test2", "test2password"));
         UserData userData = new UserData("test", "test", "test");
         String auth = serverFacade.register(userData).authToken();
-        ArrayList<GameData> games = serverFacade.listGames(auth);
+        ArrayList<GameData> games = serverFacade.listGames(auth).games();
         Assertions.assertEquals(0, games.size());
     }
 }

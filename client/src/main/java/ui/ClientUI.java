@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import client.GameList;
 import client.ServerFacade;
 import model.GameData;
 import model.UserData;
@@ -151,10 +152,14 @@ public class ClientUI {
     }
 
     private void list() {
-        ArrayList<GameData> chessGames = serverFacade.listGames(authToken);
-        for (int gameNum : gameIDs.keySet()) {
-            GameData gameData = chessGames.get(gameIDs.get(gameNum));
-            printGame(gameNum, gameData);
+        try {
+            ArrayList<GameData> chessGames = serverFacade.listGames(authToken).games();
+            for (int gameNum : gameIDs.keySet()) {
+                GameData gameData = chessGames.get(gameIDs.get(gameNum));
+                printGame(gameNum, gameData);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 

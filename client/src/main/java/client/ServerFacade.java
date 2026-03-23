@@ -39,8 +39,10 @@ public class ServerFacade {
         handleResponse(response, null);
     }
 
-    public ArrayList<GameData> listGames(String authToken) {
-
+    public GameList listGames(String authToken) throws Exception {
+        var request = buildRequest("GET", "/game", null, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, GameList.class);
     }
 
     public int createGame(String authToken, String gameName) {
