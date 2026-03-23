@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,8 +20,10 @@ public class ServerFacade {
         httpClient = HttpClient.newHttpClient();
     }
 
-    public AuthData register(String username, String password, String email) {
-
+    public AuthData register(UserData userData) throws Exception {
+        var request = buildRequest("POST", "/user", userData);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
     }
 
     public AuthData login(String username, String password) {

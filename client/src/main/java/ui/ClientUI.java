@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import client.ServerFacade;
 import model.GameData;
+import model.UserData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,13 +65,22 @@ public class ClientUI {
                 System.out.println("Logged in as " + args[1]);
             }
             case "register" -> {
-                authToken = serverFacade.register(args[1], args[2], args[3]).authToken();
-                System.out.println("Logged in as " + args[1]);
+                register(args);
             }
             default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
+    }
+
+    private void register(String[] args) {
+        UserData userData = new UserData(args[1], args[2], args[3]);
+        try {
+            authToken = serverFacade.register(userData).authToken();
+            System.out.println("Logged in as " + args[1]);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private boolean postLogin(String[] args) {

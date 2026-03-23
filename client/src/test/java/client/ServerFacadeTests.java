@@ -3,6 +3,7 @@ package client;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -30,24 +31,28 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    public void resetServer() {
+    public void resetServer() throws Exception {
         serverFacade.clear();
-        testAuth = serverFacade.register("test1", "test1password", "test1email").authToken();
-        String auth2 = serverFacade.register("test2", "test2password", "test2email").authToken();
+        UserData userData = new UserData("test1", "test1password", "test1email");
+        testAuth = serverFacade.register(userData).authToken();
+        userData = new UserData("test2", "test2password", "test2email");
+        String auth2 = serverFacade.register(userData).authToken();
         serverFacade.logout(auth2);
         testGame = serverFacade.createGame(testAuth, "testGame");
         serverFacade.joinGame(testAuth, testGame, "WHITE");
     }
 
     @Test
-    public void registerPositiveTest() {
-        AuthData authData = serverFacade.register("newUser", "123abc", "email@test.com");
+    public void registerPositiveTest() throws Exception {
+        UserData userData = new UserData("newUser", "123abc", "email@test.com");
+        AuthData authData = serverFacade.register(userData);
         Assertions.assertEquals("newUser", authData.userName());
     }
 
     @Test
     public void registerNegativeTest() {
-        Assertions.assertThrows(Exception.class, () -> serverFacade.register("test2", "123abc", "email@test.com"));
+        UserData userData = new UserData("test2", "123abc", "email@test.com");
+        Assertions.assertThrows(Exception.class, () -> serverFacade.register(userData));
     }
 
     @Test
@@ -128,11 +133,12 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void clearTest() {
+    public void clearTest() throws Exception {
         serverFacade.clear();
         Assertions.assertThrows(Exception.class, () -> serverFacade.logout(testAuth));
         Assertions.assertThrows(Exception.class, () -> serverFacade.login("test2", "test2password"));
-        String auth = serverFacade.register("test", "test", "test").authToken();
+        UserData userData = new UserData("test", "test", "test");
+        String auth = serverFacade.register(userData).authToken();
         ArrayList<GameData> games = serverFacade.listGames(auth);
         Assertions.assertEquals(0, games.size());
     }
