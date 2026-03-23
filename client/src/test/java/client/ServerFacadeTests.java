@@ -1,5 +1,6 @@
 package client;
 
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -36,22 +37,24 @@ public class ServerFacadeTests {
 
     @Test
     public void registerPositiveTest() {
-
+        AuthData authData = serverFacade.register("newUser", "123abc", "email@test.com");
+        Assertions.assertEquals("newUser", authData.userName());
     }
 
     @Test
     public void registerNegativeTest() {
-
+        Assertions.assertThrows(Exception.class, () -> serverFacade.register("test2", "123abc", "email@test.com"));
     }
 
     @Test
     public void loginPositiveTest() {
-
+        AuthData authData = serverFacade.login("test2", "test2password");
+        Assertions.assertEquals("test2", authData.userName());
     }
 
     @Test
     public void loginNegativeTest() {
-
+        Assertions.assertThrows(Exception.class, () -> serverFacade.login("notAUser", "myPassword"));
     }
 
     @Test
