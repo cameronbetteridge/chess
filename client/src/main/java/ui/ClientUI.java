@@ -98,7 +98,19 @@ public class ClientUI {
     }
 
     private void help(boolean loggedIn) {
+        if (loggedIn) {
+            printCommand("create <NAME>", "to start a chess game");
+            printCommand("list", "to list chess games");
+            printCommand("join <GAME ID> [WHITE/BLACK]", "to join a game");
+            printCommand("observe <GAME ID>", "to observe a game");
+            printCommand("logout", "when you are done");
+        } else {
+            printCommand("register <USERNAME> <PASSWORD> <EMAIL>", "to create an account");
+            printCommand("login <USERNAME> <PASSWORD>", "to play chess");
+        }
 
+        printCommand("quit", "to exit the game");
+        printCommand("help", "for more information");
     }
 
     private void list() {
@@ -135,5 +147,9 @@ public class ClientUI {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
         System.out.println(builder);
         System.out.println(EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    private void printCommand(String command, String description) {
+
     }
 }
