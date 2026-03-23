@@ -56,7 +56,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void loginPositiveTest() {
+    public void loginPositiveTest() throws Exception {
         AuthData authData = serverFacade.login("test2", "test2password");
         Assertions.assertEquals("test2", authData.userName());
     }
@@ -113,7 +113,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinPositiveTest() {
+    public void joinPositiveTest() throws Exception {
         String authToken = serverFacade.login("test2", "test2password").authToken();
         serverFacade.joinGame(authToken, testGame, "BLACK");
         ArrayList<GameData> games = serverFacade.listGames(testAuth);
@@ -127,7 +127,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinNegativeTest() {
+    public void joinNegativeTest() throws Exception {
         String authToken = serverFacade.login("test2", "test2password").authToken();
         Assertions.assertThrows(Exception.class, () -> serverFacade.joinGame(authToken, testGame, "WHITE"));
     }

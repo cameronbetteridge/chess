@@ -61,8 +61,7 @@ public class ClientUI {
                 return true;
             }
             case "login" -> {
-                authToken = serverFacade.login(args[1], args[2]).authToken();
-                System.out.println("Logged in as " + args[1]);
+                login(args);
             }
             case "register" -> {
                 register(args);
@@ -71,6 +70,15 @@ public class ClientUI {
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
+    }
+
+    private void login(String[] args) {
+        try {
+            authToken = serverFacade.login(args[1], args[2]).authToken();
+            System.out.println("Logged in as " + args[1]);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void register(String[] args) {
