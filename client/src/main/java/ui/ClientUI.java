@@ -53,18 +53,21 @@ public class ClientUI {
 
     private boolean preLogin(String[] args) {
         switch (args[0]) {
-            case "help":
+            case "help" ->
                 help(false);
-            case "quit":
+            case "quit" -> {
                 System.out.println("Goodbye!");
                 return true;
-            case "login":
+            }
+            case "login" -> {
                 authToken = serverFacade.login(args[1], args[2]);
                 System.out.println("Logged in as " + args[1]);
-            case "register":
+            }
+            case "register" -> {
                 authToken = serverFacade.register(args[1], args[2], args[3]);
                 System.out.println("Logged in as " + args[1]);
-            default:
+            }
+            default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
@@ -72,23 +75,25 @@ public class ClientUI {
 
     private void postLogin(String[] args) {
         switch (args[0]) {
-            case "help":
+            case "help" ->
                 help(true);
-            case "logout":
+            case "logout" -> {
                 serverFacade.logout(authToken);
                 authToken = null;
                 System.out.println("Logged out successfully.");
-            case "create":
+            }
+            case "create" -> {
                 int gameID = serverFacade.createGame(authToken, args[1]);
-                gameIDs.put(gameIDs.size()+1, gameID);
+                gameIDs.put(gameIDs.size() + 1, gameID);
                 System.out.println("Created game '" + args[1] + "'.");
-            case "list":
+            }
+            case "list" ->
                 list();
-            case "join":
+            case "join" ->
                 gameplay(args[2].equals("black"));
-            case "observe":
+            case "observe" ->
                 gameplay(false);
-            default:
+            default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
     }
