@@ -85,16 +85,16 @@ public class ClientUI {
             case "list":
                 list();
             case "join":
-                gameplay();
+                gameplay(args[2].equals("black"));
             case "observe":
-                gameplay();
+                gameplay(false);
             default:
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
     }
 
-    private void gameplay() {
-        boardPrinter.printBoard(new ChessBoard());
+    private void gameplay(boolean blackPlayer) {
+        boardPrinter.printBoard(new ChessBoard(), blackPlayer);
     }
 
     private void help(boolean loggedIn) {

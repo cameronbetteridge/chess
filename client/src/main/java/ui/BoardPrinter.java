@@ -2,18 +2,45 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessPiece;
-import ui.EscapeSequences;
+import chess.ChessPosition;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class BoardPrinter {
-    public void printBoard(ChessBoard board) {
+    public void printBoard(ChessBoard board, boolean blackPlayer) {
+        printColumnLabels(blackPlayer);
+        finishLine();
+
+        boolean startBlackSquare = false;
+        int start = blackPlayer ? 1 : 8;
+        int update = blackPlayer ? 1 : -1;
+
+        for (int rowNum = start; rowNum > 0 && rowNum < 9; rowNum += update) {
+            ChessPiece[] pieces = getPieces(board, blackPlayer, rowNum);
+            printRow(pieces, startBlackSquare, rowNum);
+            startBlackSquare = !startBlackSquare;
+        }
+    }
+
+    private ChessPiece[] getPieces(ChessBoard board, boolean blackPlayer, int rowNum) {
+        ChessPiece[] pieces = new ChessPiece[8];
+        for (int i = 1; i < 9; i++) {
+            pieces[i -1] = board.getPiece(new ChessPosition(rowNum, i));
+        }
+
+        if (blackPlayer) {
+            reversePieces(pieces);
+        }
+
+        return pieces;
+    }
+
+    private void printColumnLabels(boolean blackPlayer) {
 
     }
 
-    private void printColumnLabels() {
-
-    }
-
-    private void printRow(ChessPiece[] pieces, boolean startBlackSquare) {
+    private void printRow(ChessPiece[] pieces, boolean startBlackSquare, int rowNum) {
 
     }
 
@@ -31,5 +58,9 @@ public class BoardPrinter {
 
     private void finishLine() {
 
+    }
+
+    private void reversePieces(ChessPiece[] pieces) {
+        Collections.reverse(Arrays.asList(pieces));
     }
 }
