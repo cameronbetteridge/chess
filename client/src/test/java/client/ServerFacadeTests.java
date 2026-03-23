@@ -25,7 +25,7 @@ public class ServerFacadeTests {
     }
 
     @AfterAll
-    static void stopServer() {
+    static void stopServer() throws Exception {
         serverFacade.clear();
         server.stop();
     }
