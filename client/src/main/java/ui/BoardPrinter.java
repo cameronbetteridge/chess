@@ -68,7 +68,15 @@ public class BoardPrinter {
     }
 
     private void printSquare(ChessPiece piece, boolean blackSquare) {
+        if (blackSquare) {
+            System.out.print(EscapeSequences.SET_BG_COLOR_BLACK);
+        } else {
+            System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
+        }
 
+        System.out.print(' ');
+        printPiece(piece);
+        System.out.print(' ');
     }
 
     private void printPiece(ChessPiece piece) {
