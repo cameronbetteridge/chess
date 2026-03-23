@@ -1,11 +1,13 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 public class BoardPrinter {
     public void printBoard(ChessBoard board, boolean blackPlayer) {
@@ -79,8 +81,30 @@ public class BoardPrinter {
         System.out.print(' ');
     }
 
-    private void printPiece(ChessPiece piece) {
+    private final Map<ChessPiece.PieceType, String> blackPieces = Map.of(
+            ChessPiece.PieceType.PAWN, EscapeSequences.BLACK_PAWN,
+            ChessPiece.PieceType.ROOK, EscapeSequences.BLACK_ROOK,
+            ChessPiece.PieceType.KNIGHT, EscapeSequences.BLACK_KNIGHT,
+            ChessPiece.PieceType.BISHOP, EscapeSequences.BLACK_BISHOP,
+            ChessPiece.PieceType.QUEEN, EscapeSequences.BLACK_QUEEN,
+            ChessPiece.PieceType.KING, EscapeSequences.BLACK_KING
+    );
 
+    private final Map<ChessPiece.PieceType, String> whitePieces = Map.of(
+            ChessPiece.PieceType.PAWN, EscapeSequences.WHITE_PAWN,
+            ChessPiece.PieceType.ROOK, EscapeSequences.WHITE_ROOK,
+            ChessPiece.PieceType.KNIGHT, EscapeSequences.WHITE_KNIGHT,
+            ChessPiece.PieceType.BISHOP, EscapeSequences.WHITE_BISHOP,
+            ChessPiece.PieceType.QUEEN, EscapeSequences.WHITE_QUEEN,
+            ChessPiece.PieceType.KING, EscapeSequences.WHITE_KING
+    );
+
+    private void printPiece(ChessPiece piece) {
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            System.out.print(blackPieces.get(piece.getPieceType()));
+        } else {
+            System.out.print(whitePieces.get(piece.getPieceType()));
+        }
     }
 
     private void printRowLabel(int rowNum) {
