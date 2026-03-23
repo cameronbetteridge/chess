@@ -40,8 +40,16 @@ public class BoardPrinter {
 
     }
 
-    private void printRow(ChessPiece[] pieces, boolean startBlackSquare, int rowNum) {
+    private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum) {
+        printRowLabel(rowNum);
 
+        for (int i = 0; i < 8; i++) {
+            printSquare(pieces[i], blackSquare);
+            blackSquare = !blackSquare;
+        }
+
+        printRowLabel(rowNum);
+        finishLine();
     }
 
     private void printSquare(ChessPiece piece, boolean blackSquare) {
