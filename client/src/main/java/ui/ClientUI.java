@@ -96,15 +96,12 @@ public class ClientUI {
             case "help" ->
                 help(true);
             case "quit" -> {
-                serverFacade.logout(authToken);
-                authToken = null;
+                logout();
                 System.out.println("Goodbye!");
                 return true;
             }
             case "logout" -> {
-                serverFacade.logout(authToken);
-                authToken = null;
-                System.out.println("Logged out successfully.");
+                logout();
             }
             case "create" -> {
                 int gameID = serverFacade.createGame(authToken, args[1]);
@@ -121,6 +118,16 @@ public class ClientUI {
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
+    }
+
+    private void logout() {
+        try {
+            serverFacade.logout(authToken);
+            authToken = null;
+            System.out.println("Logged out successfully.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void gameplay(boolean blackPlayer) {

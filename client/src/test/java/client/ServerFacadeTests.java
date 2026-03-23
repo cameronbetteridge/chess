@@ -67,7 +67,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logoutPositiveTest() {
+    public void logoutPositiveTest() throws Exception {
         serverFacade.logout(testAuth);
         Assertions.assertThrows(Exception.class, () -> serverFacade.logout(testAuth));
     }
