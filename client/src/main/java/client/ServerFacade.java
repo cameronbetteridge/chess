@@ -2,14 +2,12 @@ package client;
 
 import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -51,8 +49,11 @@ public class ServerFacade {
         return handleResponse(response, Integer.class);
     }
 
-    public void joinGame(String authToken, int gameID, String playerColor) {
-
+    public void joinGame(String authToken, int gameID, String playerColor) throws Exception {
+        JoinRequest joinRequest = new JoinRequest(gameID, playerColor);
+        var request = buildRequest("PUT", "/game", joinRequest, authToken);
+        var response = sendRequest(request);
+        handleResponse(response, null);
     }
 
     public void clear() {

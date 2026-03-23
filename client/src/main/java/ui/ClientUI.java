@@ -1,7 +1,6 @@
 package ui;
 
 import chess.ChessBoard;
-import client.GameList;
 import client.ServerFacade;
 import model.GameData;
 import model.UserData;
