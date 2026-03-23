@@ -3,15 +3,18 @@ package client;
 import model.AuthData;
 import model.GameData;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
 public class ServerFacade {
-    private final String host;
-    private final int port;
+    private final String serverUrl;
+    private final HttpClient httpClient;
 
     public ServerFacade(String host, int port) {
-        this.host = host;
-        this.port = port;
+        serverUrl = "https://" + host + ":" + port;
+        httpClient = HttpClient.newHttpClient();
     }
 
     public AuthData register(String username, String password, String email) {
@@ -39,6 +42,18 @@ public class ServerFacade {
     }
 
     public void clear() {
+
+    }
+
+    private HttpRequest buildRequest(String method, String path, Object body) {
+
+    }
+
+    private HttpResponse<String> sendRequest(HttpRequest request) {
+
+    }
+
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) {
 
     }
 }
