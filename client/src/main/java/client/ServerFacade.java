@@ -6,6 +6,14 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class ServerFacade {
+    private final String host;
+    private final int port;
+
+    public ServerFacade(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
     public AuthData register(String username, String password, String email) {
 
     }
