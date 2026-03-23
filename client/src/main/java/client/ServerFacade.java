@@ -14,21 +14,27 @@ public class ServerFacade {
     private final HttpClient httpClient;
 
     public ServerFacade(String host, int port) {
-        serverUrl = "https://" + host + ":" + port;
+        serverUrl = "http://" + host + ":" + port;
         httpClient = HttpClient.newHttpClient();
     }
 
     public AuthData register(UserData userData) throws Exception {
         var request = buildRequest("POST", "/user", userData, null);
         var response = sendRequest(request);
-        return handleResponse(response, AuthData.class);
+
+        AuthData authData = handleResponse(response, AuthData.class);
+        assert authData != null;
+        return new AuthData(authData.authToken(), userData.username());
     }
 
     public AuthData login(String username, String password) throws Exception {
         UserData userData = new UserData(username, password, null);
         var request = buildRequest("POST", "/session", userData, null);
         var response = sendRequest(request);
-        return handleResponse(response, AuthData.class);
+
+        AuthData authData = handleResponse(response, AuthData.class);
+        assert authData != null;
+        return new AuthData(authData.authToken(), userData.username());
     }
 
     public void logout(String authToken) throws Exception {
@@ -43,10 +49,11 @@ public class ServerFacade {
         return handleResponse(response, GameList.class);
     }
 
-    public Integer createGame(String authToken, String gameName) throws Exception {
-        var request = buildRequest("POST", "/game", gameName, authToken);
+    public CreateResult createGame(String authToken, String gameName) throws Exception {
+        CreateRequest createRequest = new CreateRequest(gameName);
+        var request = buildRequest("POST", "/game", createRequest, authToken);
         var response = sendRequest(request);
-        return handleResponse(response, Integer.class);
+        return handleResponse(response, CreateResult.class);
     }
 
     public void joinGame(String authToken, int gameID, String playerColor) throws Exception {
@@ -87,7 +94,7 @@ public class ServerFacade {
         try {
             return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new Exception("Error: Something went wrong sending the http request");
+            throw new Exception("Error: Something went wrong sending the http request: " + ex.getMessage());
         }
     }
 

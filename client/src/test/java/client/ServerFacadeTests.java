@@ -38,7 +38,7 @@ public class ServerFacadeTests {
         userData = new UserData("test2", "test2password", "test2email");
         String auth2 = serverFacade.register(userData).authToken();
         serverFacade.logout(auth2);
-        testGame = serverFacade.createGame(testAuth, "testGame");
+        testGame = serverFacade.createGame(testAuth, "testGame").gameID();
         serverFacade.joinGame(testAuth, testGame, "WHITE");
     }
 
@@ -86,7 +86,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("testGame", game.gameName());
         Assertions.assertNull(game.blackUsername());
         Assertions.assertEquals("test1", game.whiteUsername());
-        Assertions.assertEquals(new ChessGame(), game.game());
+        Assertions.assertEquals(null, game.game());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ServerFacadeTests {
 
     @Test
     public void createPositiveTest() throws Exception {
-        int gameID = serverFacade.createGame(testAuth, "newGame");
+        int gameID = serverFacade.createGame(testAuth, "newGame").gameID();
         ArrayList<GameData> games = serverFacade.listGames(testAuth).games();
         Assertions.assertEquals(2, games.size());
         GameData game = games.get(1);
@@ -104,7 +104,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("newGame", game.gameName());
         Assertions.assertNull(game.blackUsername());
         Assertions.assertNull(game.whiteUsername());
-        Assertions.assertEquals(new ChessGame(), game.game());
+        Assertions.assertEquals(null, game.game());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("testGame", game.gameName());
         Assertions.assertEquals("test2", game.blackUsername());
         Assertions.assertEquals("test1", game.whiteUsername());
-        Assertions.assertEquals(new ChessGame(), game.game());
+        Assertions.assertEquals(null, game.game());
     }
 
     @Test

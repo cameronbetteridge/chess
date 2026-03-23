@@ -116,7 +116,7 @@ public class ClientUI {
 
     private void create(String gameName) {
         try {
-            int gameID = serverFacade.createGame(authToken, gameName);
+            int gameID = serverFacade.createGame(authToken, gameName).gameID();
             gameIDs.put(gameIDs.size() + 1, gameID);
             System.out.println("Created game '" + gameName + "'.");
         } catch (Exception e) {
