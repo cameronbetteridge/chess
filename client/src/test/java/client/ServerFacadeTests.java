@@ -111,6 +111,11 @@ public class ServerFacadeTests {
 
     @Test
     public void clearTest() {
-
+        serverFacade.clear();
+        Assertions.assertThrows(Exception.class, () -> serverFacade.logout(testAuth));
+        Assertions.assertThrows(Exception.class, () -> serverFacade.login("test2", "test2password"));
+        String auth = serverFacade.register("test", "test", "test").authToken();
+        ArrayList<GameData> games = serverFacade.listGames(auth);
+        Assertions.assertEquals(0, games.size());
     }
 }
