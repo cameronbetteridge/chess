@@ -105,9 +105,7 @@ public class ClientUI {
                 logout();
             }
             case "create" -> {
-                int gameID = serverFacade.createGame(authToken, args[1]);
-                gameIDs.put(gameIDs.size() + 1, gameID);
-                System.out.println("Created game '" + args[1] + "'.");
+                create(args[1]);
             }
             case "list" ->
                 list();
@@ -119,6 +117,16 @@ public class ClientUI {
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
         return false;
+    }
+
+    private void create(String gameName) {
+        try {
+            int gameID = serverFacade.createGame(authToken, gameName);
+            gameIDs.put(gameIDs.size() + 1, gameID);
+            System.out.println("Created game '" + gameName + "'.");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void logout() {

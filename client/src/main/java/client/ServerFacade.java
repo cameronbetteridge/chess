@@ -45,8 +45,10 @@ public class ServerFacade {
         return handleResponse(response, GameList.class);
     }
 
-    public int createGame(String authToken, String gameName) {
-
+    public Integer createGame(String authToken, String gameName) throws Exception {
+        var request = buildRequest("POST", "/game", gameName, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, Integer.class);
     }
 
     public void joinGame(String authToken, int gameID, String playerColor) {
