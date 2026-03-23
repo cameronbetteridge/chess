@@ -1,8 +1,12 @@
 package client;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -59,22 +63,30 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutPositiveTest() {
-
+        serverFacade.logout(testAuth);
+        Assertions.assertThrows(Exception.class, () -> serverFacade.logout(testAuth));
     }
 
     @Test
     public void logoutNegativeTest() {
-
+        Assertions.assertThrows(Exception.class, () -> serverFacade.logout("notAnAuthToken"));
     }
 
     @Test
     public void listPositiveTest() {
-
+        ArrayList<GameData> games = serverFacade.listGames(testAuth);
+        Assertions.assertEquals(1, games.size());
+        GameData game = games.getFirst();
+        Assertions.assertEquals(testGame, game.gameID());
+        Assertions.assertEquals("testGame", game.gameName());
+        Assertions.assertNull(game.blackUsername());
+        Assertions.assertEquals("test1", game.whiteUsername());
+        Assertions.assertEquals(new ChessGame(), game.game());
     }
 
     @Test
     public void listNegativeTest() {
-
+        Assertions.assertThrows(Exception.class, () -> serverFacade.listGames("notAnAuthToken"));
     }
 
     @Test
