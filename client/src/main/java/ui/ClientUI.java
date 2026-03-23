@@ -24,7 +24,7 @@ public class ClientUI {
     }
 
     public void mainLoop() {
-        boolean done = false;
+        boolean done;
         while (true) {
             String[] args = getInput(authToken != null);
             if (authToken == null) {
@@ -60,12 +60,10 @@ public class ClientUI {
                 System.out.println("Goodbye!");
                 return true;
             }
-            case "login" -> {
+            case "login" ->
                 login(args);
-            }
-            case "register" -> {
+            case "register" ->
                 register(args);
-            }
             default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
@@ -100,12 +98,10 @@ public class ClientUI {
                 System.out.println("Goodbye!");
                 return true;
             }
-            case "logout" -> {
+            case "logout" ->
                 logout();
-            }
-            case "create" -> {
+            case "create" ->
                 create(args[1]);
-            }
             case "list" ->
                 list();
             case "join" ->
