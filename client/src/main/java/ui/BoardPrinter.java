@@ -40,7 +40,19 @@ public class BoardPrinter {
     }
 
     private void printColumnLabels(boolean blackPlayer) {
+        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+        System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
 
+        System.out.print(EscapeSequences.EMPTY);
+
+        char[] labels = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        int start = blackPlayer ? 7 : 0;
+        int update = blackPlayer ? -1 : 1;
+        for (int i = start; i < 9 && i >= 0; i += update) {
+            System.out.print(' ' + labels[i] + ' ');
+        }
+
+        System.out.print(EscapeSequences.EMPTY);
     }
 
     private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum) {
