@@ -29,7 +29,7 @@ public class ClientUI {
             if (authToken == null) {
                 done = preLogin(args);
             } else {
-                postLogin(args);
+                done = postLogin(args);
             }
             if (done) {
                 return;
@@ -73,10 +73,16 @@ public class ClientUI {
         return false;
     }
 
-    private void postLogin(String[] args) {
+    private boolean postLogin(String[] args) {
         switch (args[0]) {
             case "help" ->
                 help(true);
+            case "quit" -> {
+                serverFacade.logout(authToken);
+                authToken = null;
+                System.out.println("Goodbye!");
+                return true;
+            }
             case "logout" -> {
                 serverFacade.logout(authToken);
                 authToken = null;
@@ -96,6 +102,7 @@ public class ClientUI {
             default ->
                 System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
+        return false;
     }
 
     private void gameplay(boolean blackPlayer) {
