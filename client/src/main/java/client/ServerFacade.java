@@ -1,15 +1,16 @@
 package client;
 
+import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
 
 public class ServerFacade {
-    public String register(String username, String password, String email) {
+    public AuthData register(String username, String password, String email) {
 
     }
 
-    public String login(String username, String password) {
+    public AuthData login(String username, String password) {
 
     }
 

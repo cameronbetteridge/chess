@@ -60,11 +60,11 @@ public class ClientUI {
                 return true;
             }
             case "login" -> {
-                authToken = serverFacade.login(args[1], args[2]);
+                authToken = serverFacade.login(args[1], args[2]).authToken();
                 System.out.println("Logged in as " + args[1]);
             }
             case "register" -> {
-                authToken = serverFacade.register(args[1], args[2], args[3]);
+                authToken = serverFacade.register(args[1], args[2], args[3]).authToken();
                 System.out.println("Logged in as " + args[1]);
             }
             default ->
