@@ -124,24 +124,33 @@ public class ClientUI {
         if (notEnoughArgs(args.length, 3)) {
             return;
         }
-        if (Integer.parseInt(args[1]) > gameIDs.size()) {
-            System.out.println("Game " + args[1] + " doesn't exist.");
-            return;
+        if (goodGameNum(args[1])) {
+            gameplay(args[2].equals("black"));
         }
-
-        gameplay(args[2].equals("black"));
     }
 
     private void observe(String[] args) {
         if (notEnoughArgs(args.length, 2)) {
             return;
         }
-        if (Integer.parseInt(args[1]) > gameIDs.size()) {
-            System.out.println("Game " + args[1] + " doesn't exist.");
-            return;
+        if (goodGameNum(args[1])) {
+            gameplay(false);
         }
+    }
 
-        gameplay(false);
+    private boolean goodGameNum(String gameNum) {
+        int num;
+        try {
+            num = Integer.parseInt(gameNum);
+        } catch (Exception e) {
+            System.out.println("Game " + gameNum + " doesn't exist.");
+            return false;
+        }
+        if (num > gameIDs.size() || num < 0) {
+            System.out.println("Game " + num + " doesn't exist.");
+            return false;
+        }
+        return true;
     }
 
     private void create(String[] args) {
