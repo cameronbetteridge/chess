@@ -47,11 +47,11 @@ public class BoardPrinter {
 
         System.out.print(EscapeSequences.EMPTY);
 
-        char[] labels = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        String[] labels = {"a", "b", "c", "d", "e", "f", "g", "h"};
         int start = blackPlayer ? 7 : 0;
         int update = blackPlayer ? -1 : 1;
-        for (int i = start; i < 9 && i >= 0; i += update) {
-            System.out.print(' ' + labels[i] + ' ');
+        for (int i = start; i < 8 && i >= 0; i += update) {
+            System.out.print("  " + labels[i] + "  ");
         }
 
         System.out.print(EscapeSequences.EMPTY);
@@ -81,7 +81,7 @@ public class BoardPrinter {
         System.out.print(' ');
     }
 
-    private final Map<ChessPiece.PieceType, String> blackPieces = Map.of(
+    private final Map<ChessPiece.PieceType, String> pieces = Map.of(
             ChessPiece.PieceType.PAWN, EscapeSequences.BLACK_PAWN,
             ChessPiece.PieceType.ROOK, EscapeSequences.BLACK_ROOK,
             ChessPiece.PieceType.KNIGHT, EscapeSequences.BLACK_KNIGHT,
@@ -90,30 +90,26 @@ public class BoardPrinter {
             ChessPiece.PieceType.KING, EscapeSequences.BLACK_KING
     );
 
-    private final Map<ChessPiece.PieceType, String> whitePieces = Map.of(
-            ChessPiece.PieceType.PAWN, EscapeSequences.WHITE_PAWN,
-            ChessPiece.PieceType.ROOK, EscapeSequences.WHITE_ROOK,
-            ChessPiece.PieceType.KNIGHT, EscapeSequences.WHITE_KNIGHT,
-            ChessPiece.PieceType.BISHOP, EscapeSequences.WHITE_BISHOP,
-            ChessPiece.PieceType.QUEEN, EscapeSequences.WHITE_QUEEN,
-            ChessPiece.PieceType.KING, EscapeSequences.WHITE_KING
-    );
-
     private void printPiece(ChessPiece piece) {
-        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
-            System.out.print(blackPieces.get(piece.getPieceType()));
+        if (piece == null) {
+            System.out.print(EscapeSequences.EMPTY);
+            return;
+        } else if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE);
         } else {
-            System.out.print(whitePieces.get(piece.getPieceType()));
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_RED);
         }
+        System.out.print(pieces.get(piece.getPieceType()));
     }
 
     private void printRowLabel(int rowNum) {
         System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
-        System.out.print(' ' + rowNum + ' ');
+        System.out.print(" " + rowNum + " ");
     }
 
     private void finishLine() {
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
         System.out.println(EscapeSequences.RESET_BG_COLOR);
     }
 

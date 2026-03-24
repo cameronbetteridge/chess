@@ -124,6 +124,11 @@ public class ClientUI {
         if (notEnoughArgs(args.length, 3)) {
             return;
         }
+        if (Integer.parseInt(args[1]) > gameIDs.size()) {
+            System.out.println("Game " + args[1] + " doesn't exist.");
+            return;
+        }
+
         gameplay(args[2].equals("black"));
     }
 
@@ -131,6 +136,11 @@ public class ClientUI {
         if (notEnoughArgs(args.length, 2)) {
             return;
         }
+        if (Integer.parseInt(args[1]) > gameIDs.size()) {
+            System.out.println("Game " + args[1] + " doesn't exist.");
+            return;
+        }
+
         gameplay(false);
     }
 
@@ -158,7 +168,9 @@ public class ClientUI {
     }
 
     private void gameplay(boolean blackPlayer) {
-        boardPrinter.printBoard(new ChessBoard(), blackPlayer);
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        boardPrinter.printBoard(board, blackPlayer);
     }
 
     private void help(boolean loggedIn) {
@@ -187,7 +199,8 @@ public class ClientUI {
             }
             updateGameIDs(chessGames);
             for (int gameNum : gameIDs.keySet()) {
-                GameData gameData = chessGames.get(gameIDs.get(gameNum)-1);
+                GameData gameData = getGameByID(chessGames, gameIDs.get(gameNum));
+                assert gameData != null;
                 printGame(gameNum, gameData);
             }
         } catch (Exception e) {
@@ -244,5 +257,14 @@ public class ClientUI {
         for (GameData gameData : chessGames) {
             gameIDs.put(gameIDs.size() + 1, gameData.gameID());
         }
+    }
+
+    private GameData getGameByID(ArrayList<GameData> chessGames, int gameID) {
+        for (GameData game : chessGames) {
+            if (game.gameID() == gameID) {
+                return game;
+            }
+        }
+        return null;
     }
 }
