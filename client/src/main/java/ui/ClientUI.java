@@ -180,8 +180,14 @@ public class ClientUI {
     private void list() {
         try {
             ArrayList<GameData> chessGames = serverFacade.listGames(authToken).games();
+            if (chessGames.isEmpty()) {
+                System.out.println("There are no current games.");
+            } else {
+                System.out.println("Current Games:");
+            }
+            updateGameIDs(chessGames);
             for (int gameNum : gameIDs.keySet()) {
-                GameData gameData = chessGames.get(gameIDs.get(gameNum));
+                GameData gameData = chessGames.get(gameIDs.get(gameNum)-1);
                 printGame(gameNum, gameData);
             }
         } catch (Exception e) {
@@ -231,5 +237,12 @@ public class ClientUI {
             return true;
         }
         return false;
+    }
+
+    private void updateGameIDs(ArrayList<GameData> chessGames) {
+        gameIDs.clear();
+        for (GameData gameData : chessGames) {
+            gameIDs.put(gameIDs.size() + 1, gameData.gameID());
+        }
     }
 }

@@ -95,7 +95,7 @@ public class ServerFacade {
         try {
             return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new Exception("Something went wrong. Please try again later.");
+            throw new Exception("Bad connection. Please try again later.");
         }
     }
 
@@ -109,11 +109,6 @@ public class ServerFacade {
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
         int status = response.statusCode();
         if (!isSuccessful(status)) {
-            String body = response.body();
-            if (body != null) {
-                throw new Exception(body);
-            }
-
             throw new Exception(statusCodeMessages.get(status));
         }
 
