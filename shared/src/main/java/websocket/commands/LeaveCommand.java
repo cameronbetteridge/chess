@@ -1,7 +1,14 @@
 package websocket.commands;
 
 public class LeaveCommand extends UserGameCommand {
-    public LeaveCommand(String authToken, int gameID) {
-        super(CommandType.RESIGN, authToken, gameID);
+    private final ConnectCommand.ConnectType connectType;
+
+    public LeaveCommand(String authToken, int gameID, ConnectCommand.ConnectType connectType) {
+        super(CommandType.LEAVE, authToken, gameID);
+        this.connectType = connectType;
+    }
+
+    public ConnectCommand.ConnectType getConnectType() {
+        return connectType;
     }
 }
