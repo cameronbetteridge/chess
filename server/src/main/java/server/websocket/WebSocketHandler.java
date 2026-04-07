@@ -1,7 +1,9 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.websocket.WsCloseContext;
@@ -48,7 +50,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case LEAVE -> leave((LeaveCommand) command, ctx.session);
             }
         } catch (IOException ex) {
-            System.err.println("Error: " + ex.getMessage());
+            System.err.println("IO Error: " + ex.getMessage());
+        } catch (DataAccessException ex) {
+            System.err.println("Data Access Error: " + ex.getMessage());
         }
     }
 
@@ -57,8 +61,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void connect(ConnectCommand command, Session session) throws IOException {
+    private void connect(ConnectCommand command, Session session) throws IOException, DataAccessException {
         connections.add(session);
+
+        ChessGame game = gameDAO.getGame(command.getGameID()).game();
+        LoadGameMessage loadGameMessage = new LoadGameMessage(game);
+        if (session.isOpen()) {
+            session.getRemote().sendString(loadGameMessage.toString());
+        }
+
+        String message = createMessage(command);
+        NotificationMessage notification = new NotificationMessage(message);
+
+        connections.broadcast(command.getGameID(), session, notification);
+    }
+
+    @NotNull
+    private String createMessage(ConnectCommand command) {
         String message;
         if (command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
             message = String.format("%s is observing the game.", getUsername(command.getAuthToken()));
@@ -67,12 +86,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else {
             message = String.format("%s joined as the black player.", getUsername(command.getAuthToken()));
         }
-        LoadGameMessage loadGameMessage = new LoadGameMessage();
-        NotificationMessage notification = new NotificationMessage(message);
-        if (session.isOpen()) {
-            session.getRemote().sendString(loadGameMessage.toString());
-        }
-        connections.broadcast(command.getGameID(), session, notification);
+        return message;
     }
 
     private void makeMove(MakeMoveCommand command, Session session) throws IOException {
