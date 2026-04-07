@@ -124,8 +124,18 @@ public class ClientUI {
         if (notEnoughArgs(args.length, 3)) {
             return;
         }
+        if (!args[2].equals("white") && !args[2].equals("black")) {
+            System.out.println("Must join as white or black.");
+            return;
+        }
         if (goodGameNum(args[1])) {
             gameplay(args[2].equals("black"));
+            try {
+                int gameNum = Integer.parseInt(args[1]);
+                serverFacade.joinGame(authToken, gameIDs.get(gameNum), args[2].toUpperCase());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
