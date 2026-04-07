@@ -5,12 +5,21 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
 public class BoardPrinter {
-    public void printBoard(ChessBoard board, boolean blackPlayer) {
+    private ChessBoard board = null;
+
+    public void setBoard(ChessBoard board) {
+        this.board = board;
+    }
+
+    public void printBoard(boolean blackPlayer, ChessPosition highlightPosition) {
+        ArrayList<ChessPosition> legalEndPositions = getLegalEndPositions(highlightPosition);
+
         printColumnLabels(blackPlayer);
         finishLine();
 
@@ -19,7 +28,7 @@ public class BoardPrinter {
         int update = blackPlayer ? 1 : -1;
 
         for (int rowNum = start; rowNum > 0 && rowNum < 9; rowNum += update) {
-            ChessPiece[] pieces = getPieces(board, blackPlayer, rowNum);
+            ChessPiece[] pieces = getPieces(blackPlayer, rowNum);
             printRow(pieces, startBlackSquare, rowNum);
             startBlackSquare = !startBlackSquare;
         }
@@ -28,7 +37,11 @@ public class BoardPrinter {
         finishLine();
     }
 
-    private ChessPiece[] getPieces(ChessBoard board, boolean blackPlayer, int rowNum) {
+    private ArrayList<ChessPosition> getLegalEndPositions(ChessPosition startPosition) {
+
+    }
+
+    private ChessPiece[] getPieces(boolean blackPlayer, int rowNum) {
         ChessPiece[] pieces = new ChessPiece[8];
         for (int i = 1; i < 9; i++) {
             pieces[i -1] = board.getPiece(new ChessPosition(rowNum, i));
