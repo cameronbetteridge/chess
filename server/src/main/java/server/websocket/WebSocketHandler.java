@@ -57,7 +57,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ErrorMessage errorMessage = new ErrorMessage(message);
 
             try {
-                ctx.session.getRemote().sendString(errorMessage.toString());
+                connections.send(ctx.session, errorMessage);
             } catch (IOException e) {
                 System.err.println("IO Error: " + e.getMessage());
             }
@@ -79,7 +79,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
 
         if (session.isOpen()) {
-            session.getRemote().sendString(loadGameMessage.toString());
+            connections.send(session, loadGameMessage);
         }
         System.out.println("LoadGame Message Sent");
 
@@ -121,7 +121,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else {
             ErrorMessage errorMessage = new ErrorMessage(message);
             if (session.isOpen()) {
-                session.getRemote().sendString(errorMessage.toString());
+                connections.send(session, errorMessage);
             }
         }
     }
