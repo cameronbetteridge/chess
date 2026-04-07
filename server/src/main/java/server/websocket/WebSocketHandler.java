@@ -8,7 +8,9 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.commands.UserGameCommand;
+import org.jetbrains.annotations.NotNull;
+import websocket.commands.*;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -28,48 +30,59 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
-                case CONNECT -> connect(command.getAuthToken(), command.getGameID(), ctx.session);
-                case MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), ctx.session);
-                case RESIGN -> resign(command.getAuthToken(), command.getGameID(), ctx.session);
-                case LEAVE -> leave(command.getAuthToken(), command.getGameID(), ctx.session);
+                case CONNECT -> connect((ConnectCommand) command, ctx.session);
+                case MAKE_MOVE -> makeMove((MakeMoveCommand) command, ctx.session);
+                case RESIGN -> resign((ResignCommand) command, ctx.session);
+                case LEAVE -> leave((LeaveCommand) command, ctx.session);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            System.err.println("Error: " + ex.getMessage());
         }
     }
 
     @Override
-    public void handleClose(WsCloseContext ctx) {
+    public void handleClose(@NotNull WsCloseContext ctx) {
         System.out.println("Websocket closed");
     }
 
-    private void connect(String authToken, int gameID, Session session) throws IOException {
+    private void connect(ConnectCommand command, Session session) throws IOException {
         connections.add(session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.ARRIVAL, message);
-        connections.broadcast(session, gameID, notification);
+        String message;
+        if (command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
+            message = String.format("%s is observing the game.", getUsername(command.getAuthToken()));
+        } else if (command.getConnectType().equals(ConnectCommand.ConnectType.WHITE_PLAYER)) {
+            message = String.format("%s joined as the white player.", getUsername(command.getAuthToken()));
+        } else {
+            message = String.format("%s joined as the black player.", getUsername(command.getAuthToken()));
+        }
+        NotificationMessage notification = new NotificationMessage(message);
+        connections.broadcast(command.getGameID(), session, notification);
     }
 
-    private void makeMove(String authToken, int gameID, Session session) throws IOException {
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
 
     }
 
-    private void resign(String authToken, int gameID, Session session) throws IOException {
+    private void resign(ResignCommand command, Session session) throws IOException {
 
     }
 
-    private void leave(String authToken, int gameID, Session session) throws IOException {
+    private void leave(LeaveCommand command, Session session) throws IOException {
         var message = String.format("%s left the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.DEPARTURE, message);
-        connections.broadcast(session, notification);
+        connections.broadcast(gameID, session, notification);
         connections.remove(session);
+    }
+
+    private String getUsername(String authToken) {
+
     }
 
     public void makeNoise(String petName, String sound) throws ResponseException {
         try {
             var message = String.format("%s says %s", petName, sound);
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOISE, message);
-            connections.broadcast(null, notification);
+            connections.broadcast(gameID, null, notification);
         } catch (Exception ex) {
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
         }
