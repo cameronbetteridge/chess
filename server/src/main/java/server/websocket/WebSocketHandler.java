@@ -196,6 +196,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String message = String.format("%s resigned the game.", username);
         NotificationMessage notification = new NotificationMessage(message);
         connections.broadcast(command.getGameID(), null, notification);
+
+        gameDAO.updateGame(command.getGameID(), game);
     }
 
     private void leave(UserGameCommand command, Session session) throws IOException, DataAccessException {
