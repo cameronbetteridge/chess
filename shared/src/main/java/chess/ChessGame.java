@@ -18,6 +18,8 @@ public class ChessGame {
     private boolean whiteCanCastleQueenside;
     private boolean blackCanCastleKingside;
     private boolean blackCanCastleQueenside;
+    private TeamColor winner;
+    private boolean gameOver;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -28,6 +30,8 @@ public class ChessGame {
         whiteCanCastleQueenside = true;
         blackCanCastleKingside = true;
         blackCanCastleQueenside = true;
+        winner = null;
+        gameOver = false;
     }
 
     /**
@@ -203,6 +207,8 @@ public class ChessGame {
     }
 
     private boolean isLegalMove(ChessMove move) {
+        if (gameOver) { return false; }
+
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (piece == null) { return false; }
         TeamColor color = piece.getTeamColor();
@@ -317,6 +323,27 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), piece);
         if (moveIsCastling) { castleRook(move); }
         if (moveIsEnPassant) { captureEnPassant(move); }
+
+        checkGameOver();
+    }
+
+    private void checkGameOver() {
+        if (isInCheckmate(TeamColor.WHITE)) {
+            winner = TeamColor.BLACK;
+            gameOver = true;
+        }
+        if (isInCheckmate(TeamColor.BLACK)) {
+            winner = TeamColor.WHITE;
+            gameOver = true;
+        }
+        if (isInStalemate(TeamColor.WHITE)) {
+            winner = null;
+            gameOver = true;
+        }
+        if (isInStalemate(TeamColor.BLACK)) {
+            winner = null;
+            gameOver = true;
+        }
     }
 
     private boolean canMoveTo(ChessPosition startPosition, ChessPosition endPosition, ChessBoard board) {
@@ -362,6 +389,11 @@ public class ChessGame {
             }
         }
         return allMoves;
+    }
+
+    public void resign(TeamColor teamColor) {
+        gameOver = true;
+        winner = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
