@@ -184,11 +184,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             game.game().resign(ChessGame.TeamColor.WHITE);
         } else if (username.equals(game.blackUsername())) {
             game.game().resign(ChessGame.TeamColor.BLACK);
+        } else {
+            String message = "Only players can resign the game.";
+            ErrorMessage errorMessage = new ErrorMessage(message);
+            connections.send(session, errorMessage);
+            return;
         }
 
         String message = String.format("%s resigned the game.", username);
         NotificationMessage notification = new NotificationMessage(message);
-        connections.broadcast(command.getGameID(), session, notification);
+        connections.broadcast(command.getGameID(), null, notification);
     }
 
     private void leave(UserGameCommand command, Session session) throws IOException, DataAccessException {
