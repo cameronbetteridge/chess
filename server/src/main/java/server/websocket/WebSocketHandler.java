@@ -136,7 +136,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private String getGameOverMessage(GameData game) {
-
+        if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            return String.format("%s is in checkmate! %s wins!", game.whiteUsername(), game.blackUsername());
+        }
+        if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            return String.format("%s is in checkmate! %s wins!", game.blackUsername(), game.whiteUsername());
+        }
+        if (game.game().isInStalemate((ChessGame.TeamColor.WHITE))) {
+            return String.format("%s is in stalemate! The game ends in a draw.", game.whiteUsername());
+        }
+        return String.format("%s is in stalemate! The game ends in a draw.", game.blackUsername());
     }
 
     private void resign(ResignCommand command, Session session) throws IOException, DataAccessException {
