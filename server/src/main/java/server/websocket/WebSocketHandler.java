@@ -12,6 +12,7 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import websocket.commands.*;
@@ -77,7 +78,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @NotNull
-    private String createMessage(ConnectCommand command) {
+    private String createMessage(ConnectCommand command) throws DataAccessException {
         String message;
         if (command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
             message = String.format("%s is observing the game.", getUsername(command.getAuthToken()));
@@ -97,11 +98,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void leave(LeaveCommand command, Session session) throws IOException {
+    private void leave(LeaveCommand command, Session session) throws IOException, DataAccessException {
+        if (!command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
+            removePlayer(command);
+        }
+
         var message = String.format("%s left the shop", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.DEPARTURE, message);
         connections.broadcast(gameID, session, notification);
         connections.remove(session);
+    }
+
+    private void removePlayer(LeaveCommand command) throws DataAccessException {
+        GameData oldGame = gameDAO.getGame(command.getGameID());
+        GameData newGame;
+        if (command.getConnectType().equals(ConnectCommand.ConnectType.WHITE_PLAYER)) {
+            newGame = new GameData(command.getGameID(), null, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+        } else {
+            newGame = new GameData(command.getGameID(), oldGame.whiteUsername(), null, oldGame.gameName(), oldGame.game());
+        }
+        gameDAO.updateGame(command.getGameID(), newGame);
     }
 
     private String getUsername(String authToken) throws DataAccessException {
