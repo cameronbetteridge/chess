@@ -16,10 +16,12 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
@@ -90,7 +92,37 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return message;
     }
 
-    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException, DataAccessException {
+        GameData game = gameDAO.getGame(command.getGameID());
+        String username = authDAO.getAuth(command.getAuthToken()).userName();
+        String message = tryMove(game, username);
+
+        if (message == null) {
+            LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
+            connections.broadcast(command.getGameID(), null, loadGameMessage);
+
+            message = String.format("%s played %s", username, command.getMove().toString());
+            NotificationMessage notification = new NotificationMessage(message);
+            connections.broadcast(command.getGameID(), session, notification);
+
+            message = getKeyGameStateMessage(game.game());
+            if (message != null) {
+                notification = new NotificationMessage(message);
+                connections.broadcast(command.getGameID(), session, notification);
+            }
+        } else {
+            ErrorMessage errorMessage = new ErrorMessage(message);
+            if (session.isOpen()) {
+                session.getRemote().sendString(errorMessage.toString());
+            }
+        }
+    }
+
+    private String tryMove(GameData game, String username) {
+
+    }
+
+    private String getKeyGameStateMessage(ChessGame game) {
 
     }
 
