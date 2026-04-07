@@ -71,14 +71,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             session.getRemote().sendString(loadGameMessage.toString());
         }
 
-        String message = createMessage(command);
+        String message = createConnectMessage(command);
         NotificationMessage notification = new NotificationMessage(message);
 
         connections.broadcast(command.getGameID(), session, notification);
     }
 
     @NotNull
-    private String createMessage(ConnectCommand command) throws DataAccessException {
+    private String createConnectMessage(ConnectCommand command) throws DataAccessException {
         String message;
         if (command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
             message = String.format("%s is observing the game.", getUsername(command.getAuthToken()));
@@ -95,8 +95,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void resign(ResignCommand command, Session session) throws IOException, DataAccessException {
-        ChessGame game = gameDAO.getGame(command.getGameID()).game();
+        GameData game = gameDAO.getGame(command.getGameID());
+        String username = authDAO.getAuth(command.getAuthToken()).userName();
+        if (username.equals(game.whiteUsername())) {
+            game.game().resign(ChessGame.TeamColor.WHITE);
+        } else if (username.equals(game.blackUsername())) {
+            game.game().resign(ChessGame.TeamColor.BLACK);
+        }
 
+        String message = String.format("%s resigned the game.", username);
+        NotificationMessage notification = new NotificationMessage(message);
+        connections.broadcast(command.getGameID(), session, notification);
     }
 
     private void leave(LeaveCommand command, Session session) throws IOException, DataAccessException {
