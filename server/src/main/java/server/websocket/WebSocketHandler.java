@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -69,7 +68,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(ConnectCommand command, Session session) throws IOException, DataAccessException {
-        connections.add(session);
+        connections.add(session, command.getGameID());
 
         ChessGame game = gameDAO.getGame(command.getGameID()).game();
         LoadGameMessage loadGameMessage = new LoadGameMessage(game);
@@ -139,7 +138,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void sendKeyGameStateMessage(GameData game, Session session) {
+    private void sendKeyGameStateMessage(GameData game, Session session) throws IOException {
         String message = null;
 
         if (game.game().gameOver()) {
