@@ -138,14 +138,4 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private String getUsername(String authToken) throws DataAccessException {
         return authDAO.getAuth(authToken).userName();
     }
-
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOISE, message);
-            connections.broadcast(gameID, null, notification);
-        } catch (Exception ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
-    }
 }
