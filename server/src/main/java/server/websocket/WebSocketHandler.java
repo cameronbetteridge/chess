@@ -50,7 +50,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
         } catch (IOException ex) {
             System.err.println("IO Error: " + ex.getMessage());
-        } catch (DataAccessException ex) {
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+
             String message = "Error: Invalid command.";
             ErrorMessage errorMessage = new ErrorMessage(message);
 
