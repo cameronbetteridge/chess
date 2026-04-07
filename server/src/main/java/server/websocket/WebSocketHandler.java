@@ -118,6 +118,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.broadcast(command.getGameID(), session, notification);
 
             sendKeyGameStateMessage(game, session);
+
+            gameDAO.updateGame(command.getGameID(), game);
         } else {
             ErrorMessage errorMessage = new ErrorMessage(message);
             if (session.isOpen()) {
@@ -160,7 +162,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if (message != null) {
             NotificationMessage notification = new NotificationMessage(message);
-            connections.broadcast(game.gameID(), session, notification);
+            connections.broadcast(game.gameID(), null, notification);
         }
     }
 
@@ -180,12 +182,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resign(UserGameCommand command, Session session) throws IOException, DataAccessException {
         GameData game = gameDAO.getGame(command.getGameID());
         String username = authDAO.getAuth(command.getAuthToken()).userName();
-        if (username.equals(game.whiteUsername())) {
+        if (username.equals(game.whiteUsername()) && !game.game().gameOver()) {
             game.game().resign(ChessGame.TeamColor.WHITE);
-        } else if (username.equals(game.blackUsername())) {
+        } else if (username.equals(game.blackUsername()) && !game.game().gameOver()) {
             game.game().resign(ChessGame.TeamColor.BLACK);
         } else {
-            String message = "Only players can resign the game.";
+            String message = "You can't resign right now.";
             ErrorMessage errorMessage = new ErrorMessage(message);
             connections.send(session, errorMessage);
             return;
