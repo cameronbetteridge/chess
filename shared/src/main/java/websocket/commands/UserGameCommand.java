@@ -1,5 +1,7 @@
 package websocket.commands;
 
+import chess.ChessMove;
+
 import java.util.Objects;
 
 /**
@@ -8,19 +10,8 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class UserGameCommand {
-
-    private final CommandType commandType;
-
-    private final String authToken;
-
-    private final Integer gameID;
-
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
-        this.commandType = commandType;
-        this.authToken = authToken;
-        this.gameID = gameID;
-    }
+public record UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessMove move,
+                              ConnectType connectType) {
 
     public enum CommandType {
         CONNECT,
@@ -29,16 +20,10 @@ public class UserGameCommand {
         RESIGN
     }
 
-    public CommandType getCommandType() {
-        return commandType;
-    }
-
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public Integer getGameID() {
-        return gameID;
+    public enum ConnectType {
+        WHITE_PLAYER,
+        BLACK_PLAYER,
+        OBSERVER
     }
 
     @Override
@@ -49,13 +34,13 @@ public class UserGameCommand {
         if (!(o instanceof UserGameCommand that)) {
             return false;
         }
-        return getCommandType() == that.getCommandType() &&
-                Objects.equals(getAuthToken(), that.getAuthToken()) &&
-                Objects.equals(getGameID(), that.getGameID());
+        return commandType() == that.commandType() &&
+                Objects.equals(authToken(), that.authToken()) &&
+                Objects.equals(gameID(), that.gameID());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCommandType(), getAuthToken(), getGameID());
+        return Objects.hash(commandType(), authToken(), gameID());
     }
 }
