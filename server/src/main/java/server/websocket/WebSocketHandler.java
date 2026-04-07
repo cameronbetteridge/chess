@@ -21,19 +21,14 @@ import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
-
-import javax.xml.crypto.Data;
 import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connections = new ConnectionManager();
-    private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
-    public WebSocketHandler(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
-        this.userDAO = userDAO;
+    public WebSocketHandler(GameDAO gameDAO, AuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
@@ -57,7 +52,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (IOException ex) {
             System.err.println("IO Error: " + ex.getMessage());
         } catch (DataAccessException ex) {
-            System.err.println("Data Access Error: " + ex.getMessage());
+            String message = "Error: Invalid command.";
+            ErrorMessage errorMessage = new ErrorMessage(message);
+
+            try {
+                ctx.session.getRemote().sendString(errorMessage.toString());
+            } catch (IOException e) {
+                System.err.println("IO Error: " + e.getMessage());
+            }
         }
     }
 
@@ -119,21 +121,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private String tryMove(GameData game, String username, ChessMove move) {
         if (username.equals(game.whiteUsername())) {
             if (!game.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
-                return "It's not your turn right now.";
+                return "Error: It's not your turn right now.";
             }
         } else if (username.equals(game.blackUsername())) {
             if (!game.game().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
-                return "It's not your turn right now.";
+                return "Error: It's not your turn right now.";
             }
         } else {
-            return "You must be a player to make a move.";
+            return "Error: You must be a player to make a move.";
         }
 
         try {
             game.game().makeMove(move);
             return null;
         } catch (InvalidMoveException ex) {
-            return move.toString() + " is an illegal move!";
+            return "Error: " + move.toString() + " is an illegal move!";
         }
     }
 
