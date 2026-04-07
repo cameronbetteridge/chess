@@ -104,8 +104,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.remove(session);
     }
 
-    private String getUsername(String authToken) {
-
+    private String getUsername(String authToken) throws DataAccessException {
+        return authDAO.getAuth(authToken).userName();
     }
 
     public void makeNoise(String petName, String sound) throws ResponseException {
