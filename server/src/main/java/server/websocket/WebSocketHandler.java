@@ -94,13 +94,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void resign(ResignCommand command, Session session) throws IOException {
+    private void resign(ResignCommand command, Session session) throws IOException, DataAccessException {
+        ChessGame game = gameDAO.getGame(command.getGameID()).game();
 
     }
 
     private void leave(LeaveCommand command, Session session) throws IOException, DataAccessException {
-        if (!command.getConnectType().equals(ConnectCommand.ConnectType.OBSERVER)) {
-            removePlayer(command);
+        GameData game = gameDAO.getGame(command.getGameID());
+        String username = authDAO.getAuth(command.getAuthToken()).userName();
+        if (username.equals(game.whiteUsername())) {
+            removePlayer(command, true);
+        } else if (username.equals(game.blackUsername())) {
+            removePlayer(command, false);
         }
 
         var message = String.format("%s left the game.", getUsername(command.getAuthToken()));
@@ -110,10 +115,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.remove(session);
     }
 
-    private void removePlayer(LeaveCommand command) throws DataAccessException {
+    private void removePlayer(LeaveCommand command, boolean isWhitePlayer) throws DataAccessException {
         GameData oldGame = gameDAO.getGame(command.getGameID());
         GameData newGame;
-        if (command.getConnectType().equals(ConnectCommand.ConnectType.WHITE_PLAYER)) {
+        if (isWhitePlayer) {
             newGame = new GameData(command.getGameID(), null, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
         } else {
             newGame = new GameData(command.getGameID(), oldGame.whiteUsername(), null, oldGame.gameName(), oldGame.game());
