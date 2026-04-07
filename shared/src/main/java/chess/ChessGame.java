@@ -327,6 +327,10 @@ public class ChessGame {
         checkGameOver();
     }
 
+    public boolean gameOver() {
+        return gameOver;
+    }
+
     private void checkGameOver() {
         if (isInCheckmate(TeamColor.WHITE)) {
             winner = TeamColor.BLACK;

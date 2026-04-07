@@ -105,11 +105,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             NotificationMessage notification = new NotificationMessage(message);
             connections.broadcast(command.getGameID(), session, notification);
 
-            message = getKeyGameStateMessage(game.game());
-            if (message != null) {
-                notification = new NotificationMessage(message);
-                connections.broadcast(command.getGameID(), session, notification);
-            }
+            sendKeyGameStateMessage(game, session);
         } else {
             ErrorMessage errorMessage = new ErrorMessage(message);
             if (session.isOpen()) {
@@ -122,7 +118,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private String getKeyGameStateMessage(ChessGame game) {
+    private void sendKeyGameStateMessage(GameData game, Session session) {
+        String message = null;
+
+        if (game.game().gameOver()) {
+            message = getGameOverMessage(game);
+        } else if (game.game().isInCheck(ChessGame.TeamColor.WHITE)) {
+            message = String.format("%s is in check!", game.whiteUsername());
+        } else if (game.game().isInCheck(ChessGame.TeamColor.BLACK)) {
+            message = String.format("%s is in check!", game.blackUsername());
+        }
+
+        if (message != null) {
+            NotificationMessage notification = new NotificationMessage(message);
+            connections.broadcast(game.gameID(), session, notification);
+        }
+    }
+
+    private String getGameOverMessage(GameData game) {
 
     }
 
