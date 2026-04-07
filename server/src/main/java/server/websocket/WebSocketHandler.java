@@ -1,6 +1,8 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -95,7 +97,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void makeMove(MakeMoveCommand command, Session session) throws IOException, DataAccessException {
         GameData game = gameDAO.getGame(command.getGameID());
         String username = authDAO.getAuth(command.getAuthToken()).userName();
-        String message = tryMove(game, username);
+        String message = tryMove(game, username, command.getMove());
 
         if (message == null) {
             LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
@@ -114,8 +116,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private String tryMove(GameData game, String username) {
+    private String tryMove(GameData game, String username, ChessMove move) {
+        if (username.equals(game.whiteUsername())) {
+            if (!game.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+                return "It's not your turn right now.";
+            }
+        } else if (username.equals(game.blackUsername())) {
+            if (!game.game().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+                return "It's not your turn right now.";
+            }
+        } else {
+            return "You must be a player to make a move.";
+        }
 
+        try {
+            game.game().makeMove(move);
+            return null;
+        } catch (InvalidMoveException ex) {
+            return move.toString() + " is an illegal move!";
+        }
     }
 
     private void sendKeyGameStateMessage(GameData game, Session session) {
