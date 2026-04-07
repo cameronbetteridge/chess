@@ -103,9 +103,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             removePlayer(command);
         }
 
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.DEPARTURE, message);
-        connections.broadcast(gameID, session, notification);
+        var message = String.format("%s left the game.", getUsername(command.getAuthToken()));
+        var notification = new NotificationMessage(message);
+        connections.broadcast(command.getGameID(), session, notification);
+
         connections.remove(session);
     }
 
