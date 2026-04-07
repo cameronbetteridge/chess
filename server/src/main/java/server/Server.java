@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
+import server.websocket.WebSocketHandler;
 import service.GameService;
 import service.UserService;
 
@@ -23,10 +24,13 @@ public class Server {
             System.out.println("Error: "+ex.getMessage());
             databaseGood = false;
         }
+
         UserService userService = new UserService(userDAO, authDAO);
         GameService gameService = new GameService(userDAO, gameDAO, authDAO);
         UserHandler userHandler = new UserHandler(userService);
         GameHandler gameHandler = new GameHandler(gameService);
+
+        WebSocketHandler webSocketHandler = new WebSocketHandler(gameDAO, authDAO);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .before(this::badDatabaseHandler)
@@ -37,7 +41,12 @@ public class Server {
                 .get("/game", gameHandler::list)
                 .post("/game", gameHandler::createGame)
                 .put("/game", gameHandler::joinGame)
-                .exception(DataAccessException.class, this::exceptionHandler);
+                .exception(DataAccessException.class, this::exceptionHandler)
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
     }
 
     public int run(int desiredPort) {
