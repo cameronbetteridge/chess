@@ -28,6 +28,12 @@ public class ChessPosition {
         return (row * 8) + col;
     }
 
+    @Override
+    public String toString() {
+        char columnName = (char) col;
+        return String.format("%c%d", columnName, row);
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row

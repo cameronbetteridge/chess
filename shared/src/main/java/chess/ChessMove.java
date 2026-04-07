@@ -48,6 +48,11 @@ public class ChessMove {
         return (promotionHash * 5 * 64) + (startPosition.hashCode() * 64) + endPosition.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return startPosition.toString() + "-" + endPosition.toString();
+    }
+
     /**
      * @return ChessPosition of starting location
      */
