@@ -10,8 +10,17 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public record UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessMove move,
-                              ConnectType connectType) {
+public class UserGameCommand {
+    private final CommandType commandType;
+    private final String authToken;
+    private final Integer gameID;
+    private ChessMove move = null;
+
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
+        this.commandType = commandType;
+        this.authToken = authToken;
+        this.gameID = gameID;
+    }
 
     public enum CommandType {
         CONNECT,
@@ -20,10 +29,24 @@ public record UserGameCommand(CommandType commandType, String authToken, Integer
         RESIGN
     }
 
-    public enum ConnectType {
-        WHITE_PLAYER,
-        BLACK_PLAYER,
-        OBSERVER
+    public CommandType getCommandType() {
+        return commandType;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public Integer getGameID() {
+        return gameID;
+    }
+
+    public ChessMove getMove() {
+        return move;
+    }
+
+    public void setMove(ChessMove move) {
+        this.move = move;
     }
 
     @Override
@@ -34,13 +57,13 @@ public record UserGameCommand(CommandType commandType, String authToken, Integer
         if (!(o instanceof UserGameCommand that)) {
             return false;
         }
-        return commandType() == that.commandType() &&
-                Objects.equals(authToken(), that.authToken()) &&
-                Objects.equals(gameID(), that.gameID());
+        return getCommandType() == that.getCommandType() &&
+                Objects.equals(getAuthToken(), that.getAuthToken()) &&
+                Objects.equals(getGameID(), that.getGameID());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(commandType(), authToken(), gameID());
+        return Objects.hash(getCommandType(), getAuthToken(), getGameID());
     }
 }
