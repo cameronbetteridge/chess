@@ -1,6 +1,9 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -10,14 +13,23 @@ import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import websocket.commands.*;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
-
     private final ConnectionManager connections = new ConnectionManager();
+    private final UserDAO userDAO;
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
+
+    public WebSocketHandler(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
+        this.userDAO = userDAO;
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -55,7 +67,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else {
             message = String.format("%s joined as the black player.", getUsername(command.getAuthToken()));
         }
+        LoadGameMessage loadGameMessage = new LoadGameMessage();
         NotificationMessage notification = new NotificationMessage(message);
+        if (session.isOpen()) {
+            session.getRemote().sendString(loadGameMessage.toString());
+        }
         connections.broadcast(command.getGameID(), session, notification);
     }
 
