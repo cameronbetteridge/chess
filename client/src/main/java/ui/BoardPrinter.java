@@ -1,14 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class BoardPrinter {
     private ChessBoard board = null;
@@ -18,7 +12,7 @@ public class BoardPrinter {
     }
 
     public void printBoard(boolean blackPlayer, ChessPosition highlightPosition) {
-        ArrayList<ChessPosition> legalEndPositions = getLegalEndPositions(highlightPosition);
+        Collection<ChessPosition> legalEndPositions = getLegalEndPositions(highlightPosition);
 
         printColumnLabels(blackPlayer);
         finishLine();
@@ -29,7 +23,7 @@ public class BoardPrinter {
 
         for (int rowNum = start; rowNum > 0 && rowNum < 9; rowNum += update) {
             ChessPiece[] pieces = getPieces(blackPlayer, rowNum);
-            printRow(pieces, startBlackSquare, rowNum);
+            printRow(pieces, startBlackSquare, rowNum, highlightPosition, legalEndPositions);
             startBlackSquare = !startBlackSquare;
         }
 
@@ -37,8 +31,21 @@ public class BoardPrinter {
         finishLine();
     }
 
-    private ArrayList<ChessPosition> getLegalEndPositions(ChessPosition startPosition) {
+    private Collection<ChessPosition> getLegalEndPositions(ChessPosition startPosition) {
+        if (startPosition == null) {
+            return new ArrayList<>();
+        }
 
+        ChessGame game = new ChessGame();
+        game.setBoard(board);
+        Collection<ChessMove> validMoves = game.validMoves(startPosition);
+
+        Collection<ChessPosition> endPositions = new ArrayList<>();
+        for (ChessMove move : validMoves) {
+            endPositions.add(move.getEndPosition());
+        }
+
+        return endPositions;
     }
 
     private ChessPiece[] getPieces(boolean blackPlayer, int rowNum) {
@@ -70,11 +77,13 @@ public class BoardPrinter {
         System.out.print(EscapeSequences.EMPTY);
     }
 
-    private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum) {
+    private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum, ChessPosition startPosition, Collection<ChessPosition> legalEndPositions) {
         printRowLabel(rowNum);
 
         for (int i = 0; i < 8; i++) {
-            printSquare(pieces[i], blackSquare);
+            boolean highlight = highlightSquare(legalEndPositions, rowNum, i);
+            boolean highlightPosition = startPosition.getRow() == rowNum && startPosition.getColumn() == i;
+            printSquare(pieces[i], blackSquare, highlight, highlightPosition);
             blackSquare = !blackSquare;
         }
 
@@ -82,9 +91,24 @@ public class BoardPrinter {
         finishLine();
     }
 
-    private void printSquare(ChessPiece piece, boolean blackSquare) {
-        if (blackSquare) {
+    private boolean highlightSquare(Collection<ChessPosition> legalEndPositions, int row, int col) {
+        for (ChessPosition position : legalEndPositions) {
+            if (position.getColumn() == col && position.getRow() == row) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void printSquare(ChessPiece piece, boolean blackSquare, boolean highlight, boolean highlightPosition) {
+        if (highlightPosition) {
+            System.out.println(EscapeSequences.SET_BG_COLOR_YELLOW);
+        } else if (blackSquare && highlight) {
+            System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+        } else if (blackSquare) {
             System.out.print(EscapeSequences.SET_BG_COLOR_BLACK);
+        } else if (highlight) {
+            System.out.println(EscapeSequences.SET_BG_COLOR_GREEN);
         } else {
             System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
         }
