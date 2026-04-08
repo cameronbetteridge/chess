@@ -32,6 +32,7 @@ public class ServerMessageHandler {
     private void loadGame(LoadGameMessage loadGameMessage) {
         boardPrinter.setBoard(loadGameMessage.getGame().getBoard());
         boardPrinter.printBoard(null);
+        printPrompt();
     }
 
     private void error(ErrorMessage errorMessage) {
