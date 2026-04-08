@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import client.ServerFacade;
+import client.WebsocketCommunicator;
 import model.GameData;
 import model.UserData;
 
@@ -12,15 +13,19 @@ import java.util.Scanner;
 
 public class ClientUI {
     ServerFacade serverFacade;
+    WebsocketCommunicator websocketCommunicator;
     BoardPrinter boardPrinter;
     String authToken;
     Map<Integer,Integer> gameIDs;
+    int currentGameID;
 
-    public ClientUI(ServerFacade serverFacade, BoardPrinter boardPrinter) {
+    public ClientUI(ServerFacade serverFacade, WebsocketCommunicator websocketCommunicator, BoardPrinter boardPrinter) {
         this.serverFacade = serverFacade;
+        this.websocketCommunicator = websocketCommunicator;
         this.boardPrinter = boardPrinter;
         authToken = null;
         gameIDs = new HashMap<>();
+        currentGameID = -1;
     }
 
     public void mainLoop() {
@@ -29,8 +34,10 @@ public class ClientUI {
             String[] args = getInput(authToken != null);
             if (authToken == null) {
                 done = preLogin(args);
-            } else {
+            } else if (currentGameID == -1) {
                 done = postLogin(args);
+            } else {
+                done = gameplay(args);
             }
             if (done) {
                 return;
@@ -55,7 +62,7 @@ public class ClientUI {
     private boolean preLogin(String[] args) {
         switch (args[0]) {
             case "help" ->
-                help(false);
+                help(false, false);
             case "quit" -> {
                 System.out.println("Goodbye!");
                 return true;
@@ -98,7 +105,7 @@ public class ClientUI {
     private boolean postLogin(String[] args) {
         switch (args[0]) {
             case "help" ->
-                help(true);
+                help(true, false);
             case "quit" -> {
                 logout();
                 System.out.println("Goodbye!");
@@ -120,6 +127,23 @@ public class ClientUI {
         return false;
     }
 
+    private boolean gameplay(String[] args) {
+        switch (args[0]) {
+            case "help" ->
+                help(true, true);
+            case "redraw" ->
+                jkl;
+            case "move" ->
+                jkl;
+            case "legal" ->
+                jkl;
+            case "resign" ->
+                jkl;
+            case "leave" ->
+                jkl;
+        }
+    }
+
     private void join(String[] args) {
         if (notEnoughArgs(args.length, 3)) {
             return;
@@ -129,10 +153,11 @@ public class ClientUI {
             return;
         }
         if (goodGameNum(args[1])) {
-            gameplay(args[2].equals("black"));
             try {
                 int gameNum = Integer.parseInt(args[1]);
                 serverFacade.joinGame(authToken, gameIDs.get(gameNum), args[2].toUpperCase());
+                websocketCommunicator.connectWebsocket(authToken, gameIDs.get(gameNum));
+                currentGameID = gameIDs.get(gameNum);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -144,7 +169,13 @@ public class ClientUI {
             return;
         }
         if (goodGameNum(args[1])) {
-            gameplay(false);
+            try {
+                int gameNum = Integer.parseInt(args[1]);
+                websocketCommunicator.connectWebsocket(authToken, gameIDs.get(gameNum));
+                currentGameID = gameIDs.get(gameNum);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -186,25 +217,26 @@ public class ClientUI {
         }
     }
 
-    private void gameplay(boolean blackPlayer) {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        boardPrinter.printBoard(board, blackPlayer);
-    }
-
-    private void help(boolean loggedIn) {
-        if (loggedIn) {
+    private void help(boolean loggedIn, boolean inGameplay) {
+        if (loggedIn && inGameplay) {
+            printCommand("redraw", "to redraw the chess board");
+            printCommand("move <MOVE>", "to make a move");
+            printCommand("legal <PIECE>", "to see a piece's legal moves");
+            printCommand("resign", "to resign the game");
+            printCommand("leave", "to leave the game");
+        } else if (loggedIn) {
             printCommand("create <NAME>", "to start a chess game");
             printCommand("list", "to list chess games");
             printCommand("join <GAME ID> [WHITE/BLACK]", "to join a game");
             printCommand("observe <GAME ID>", "to observe a game");
             printCommand("logout", "when you are done");
+            printCommand("quit", "to exit the game");
         } else {
             printCommand("register <USERNAME> <PASSWORD> <EMAIL>", "to create an account");
             printCommand("login <USERNAME> <PASSWORD>", "to play chess");
+            printCommand("quit", "to exit the game");
         }
 
-        printCommand("quit", "to exit the game");
         printCommand("help", "for more information");
     }
 
