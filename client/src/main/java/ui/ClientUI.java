@@ -1,6 +1,7 @@
 package ui;
 
-import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPosition;
 import client.ServerFacade;
 import client.WebsocketCommunicator;
 import model.GameData;
@@ -29,7 +30,7 @@ public class ClientUI {
     }
 
     public void mainLoop() {
-        boolean done;
+        boolean done = false;
         while (true) {
             String[] args = getInput(authToken != null);
             if (authToken == null) {
@@ -37,7 +38,7 @@ public class ClientUI {
             } else if (currentGameID == -1) {
                 done = postLogin(args);
             } else {
-                done = gameplay(args);
+                gameplay(args);
             }
             if (done) {
                 return;
@@ -127,20 +128,57 @@ public class ClientUI {
         return false;
     }
 
-    private boolean gameplay(String[] args) {
+    private void gameplay(String[] args) {
         switch (args[0]) {
             case "help" ->
                 help(true, true);
             case "redraw" ->
-                jkl;
+                boardPrinter.printBoard(null);
             case "move" ->
-                jkl;
-            case "legal" ->
-                jkl;
+                makeMove(args);
+            case "legal" -> {
+                ChessPosition highlightPosition = ChessPosition.fromString(args[1]);
+                boardPrinter.printBoard(highlightPosition);
+            }
             case "resign" ->
-                jkl;
+                resign();
             case "leave" ->
-                jkl;
+                leaveGame();
+        }
+    }
+
+    private void resign() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Are you sure you want to resign? (y or n): ");
+        String confirmation = scanner.nextLine().toLowerCase();
+
+        if (!confirmation.equals("y")) {
+            return;
+        }
+
+        try {
+            websocketCommunicator.resign(authToken);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void leaveGame() {
+        try {
+            websocketCommunicator.leave(authToken);
+            System.out.println("You left the game.");
+            currentGameID = -1;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void makeMove(String[] args) {
+        ChessMove chessMove = ChessMove.fromString(args[1]);
+        try {
+            websocketCommunicator.makeMove(authToken, chessMove);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -156,8 +194,9 @@ public class ClientUI {
             try {
                 int gameNum = Integer.parseInt(args[1]);
                 serverFacade.joinGame(authToken, gameIDs.get(gameNum), args[2].toUpperCase());
-                websocketCommunicator.connectWebsocket(authToken, gameIDs.get(gameNum));
+                websocketCommunicator.connect(authToken, gameIDs.get(gameNum));
                 currentGameID = gameIDs.get(gameNum);
+                boardPrinter.setBlackPlayer(args[2].equals("black"));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -171,8 +210,9 @@ public class ClientUI {
         if (goodGameNum(args[1])) {
             try {
                 int gameNum = Integer.parseInt(args[1]);
-                websocketCommunicator.connectWebsocket(authToken, gameIDs.get(gameNum));
+                websocketCommunicator.connect(authToken, gameIDs.get(gameNum));
                 currentGameID = gameIDs.get(gameNum);
+                boardPrinter.setBlackPlayer(false);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
