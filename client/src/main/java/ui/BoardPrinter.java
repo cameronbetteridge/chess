@@ -6,15 +6,21 @@ import java.util.*;
 
 public class BoardPrinter {
     private ChessBoard board = null;
+    private boolean blackPlayer = false;
 
     public void setBoard(ChessBoard board) {
         this.board = board;
     }
 
-    public void printBoard(boolean blackPlayer, ChessPosition highlightPosition) {
+    public void setBlackPlayer(boolean blackPlayer) {
+        this.blackPlayer = blackPlayer;
+    }
+
+    public void printBoard(ChessPosition highlightPosition) {
         Collection<ChessPosition> legalEndPositions = getLegalEndPositions(highlightPosition);
 
-        printColumnLabels(blackPlayer);
+        System.out.println();
+        printColumnLabels();
         finishLine();
 
         boolean startBlackSquare = false;
@@ -22,12 +28,12 @@ public class BoardPrinter {
         int update = blackPlayer ? 1 : -1;
 
         for (int rowNum = start; rowNum > 0 && rowNum < 9; rowNum += update) {
-            ChessPiece[] pieces = getPieces(blackPlayer, rowNum);
+            ChessPiece[] pieces = getPieces(rowNum);
             printRow(pieces, startBlackSquare, rowNum, highlightPosition, legalEndPositions);
             startBlackSquare = !startBlackSquare;
         }
 
-        printColumnLabels(blackPlayer);
+        printColumnLabels();
         finishLine();
     }
 
@@ -48,7 +54,7 @@ public class BoardPrinter {
         return endPositions;
     }
 
-    private ChessPiece[] getPieces(boolean blackPlayer, int rowNum) {
+    private ChessPiece[] getPieces(int rowNum) {
         ChessPiece[] pieces = new ChessPiece[8];
         for (int i = 1; i < 9; i++) {
             pieces[i -1] = board.getPiece(new ChessPosition(rowNum, i));
@@ -61,7 +67,7 @@ public class BoardPrinter {
         return pieces;
     }
 
-    private void printColumnLabels(boolean blackPlayer) {
+    private void printColumnLabels() {
         System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         System.out.print(EscapeSequences.SET_TEXT_COLOR_BLACK);
 
@@ -102,13 +108,13 @@ public class BoardPrinter {
 
     private void printSquare(ChessPiece piece, boolean blackSquare, boolean highlight, boolean highlightPosition) {
         if (highlightPosition) {
-            System.out.println(EscapeSequences.SET_BG_COLOR_YELLOW);
+            System.out.print(EscapeSequences.SET_BG_COLOR_YELLOW);
         } else if (blackSquare && highlight) {
-            System.out.println(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
+            System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREEN);
         } else if (blackSquare) {
             System.out.print(EscapeSequences.SET_BG_COLOR_BLACK);
         } else if (highlight) {
-            System.out.println(EscapeSequences.SET_BG_COLOR_GREEN);
+            System.out.print(EscapeSequences.SET_BG_COLOR_GREEN);
         } else {
             System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
         }
