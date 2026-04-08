@@ -30,8 +30,15 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        char columnName = (char) col;
+        char columnName = (char) (col + 97);
         return String.format("%c%d", columnName, row);
+    }
+
+    public static ChessPosition fromString(String str) {
+        char columnName = str.charAt(0);
+        int col = columnName - 97;
+        int row = str.charAt(1);
+        return new ChessPosition(row, col);
     }
 
     /**

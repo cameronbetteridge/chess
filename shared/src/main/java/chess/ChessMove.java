@@ -50,7 +50,35 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return startPosition.toString() + "-" + endPosition.toString();
+        String str = startPosition.toString() + "-" + endPosition.toString();
+        str += switch (promotionPiece) {
+            case ChessPiece.PieceType.QUEEN -> "=Q";
+            case ChessPiece.PieceType.ROOK -> "=R";
+            case ChessPiece.PieceType.BISHOP -> "=B";
+            case ChessPiece.PieceType.KNIGHT -> "=N";
+            default -> "";
+        };
+        return str;
+    }
+
+    public static ChessMove fromString(String str) {
+        ChessPiece.PieceType promotionPiece = null;
+        if (str.indexOf('=') != -1) {
+            char promotionChar = str.charAt(str.indexOf('=') + 1);
+            promotionPiece = switch (promotionChar) {
+                case 'Q' -> ChessPiece.PieceType.QUEEN;
+                case 'R' -> ChessPiece.PieceType.ROOK;
+                case 'B' -> ChessPiece.PieceType.BISHOP;
+                case 'N' -> ChessPiece.PieceType.KNIGHT;
+                default -> null;
+            };
+        }
+
+        String[] positions = str.split("-");
+        ChessPosition startPosition = ChessPosition.fromString(positions[0]);
+        ChessPosition endPosition = ChessPosition.fromString(positions[1]);
+
+        return new ChessMove(startPosition, endPosition, promotionPiece);
     }
 
     /**
