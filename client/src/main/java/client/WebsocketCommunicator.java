@@ -1,61 +1,67 @@
 package client;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 
-import jakarta.websocket.*;
+import io.javalin.router.Endpoint;
+
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.WebSocketContainer;
+import jakarta.websocket.Session;
+import jakarta.websocket.MessageHandler;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebsocketCommunicator extends Endpoint {
-
     Session session;
     ServerMessageHandler serverMessageHandler;
+    URI socketURI;
 
-    public WebSocketFacade(String url, ServerMessageHandler ServerMessageHandler) throws ResponseException {
+    public WebsocketCommunicator(String url, int port, ServerMessageHandler serverMessageHandler) throws Exception {
         try {
             url = url.replace("http", "ws");
-            URI socketURI = new URI(url + "/ws");
-            this.serverMessageHandler = ServerMessageHandler;
-
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            this.session = container.connectToServer(this, socketURI);
-
-            //set message handler
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
-                    ServerMessageHandler.notify(notification);
-                }
-            });
-        } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            socketURI = new URI(url + ":" + port + "/ws");
+            this.serverMessageHandler = serverMessageHandler;
+            this.session = null;
+        } catch (URISyntaxException ex) {
+            throw new Exception(ex.getMessage());
         }
     }
 
-    //Endpoint requires this method, but you don't have to do anything
-    @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
+    public void connect(String authToken, int gameID) throws Exception {
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        this.session = container.connectToServer(this, socketURI);
+
+        this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+            ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+            serverMessageHandler.notify(serverMessage);
+        });
+
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        sendCommand(command);
     }
 
-    public void enterPetShop(String visitorName) throws ResponseException {
-        try {
-            var action = new Action(Action.Type.ENTER, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
+    public void makeMove(ChessMove move, String authToken, int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID);
+        command.setMove(move);
+        sendCommand(command);
     }
 
-    public void leavePetShop(String visitorName) throws ResponseException {
-        try {
-            var action = new Action(Action.Type.EXIT, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
+    public void resign(String authToken, int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+        sendCommand(command);
     }
 
+    public void leave(String authToken, int gameID) throws IOException {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        sendCommand(command);
+    }
+
+    private void sendCommand(UserGameCommand command) throws IOException {
+        this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    }
 }

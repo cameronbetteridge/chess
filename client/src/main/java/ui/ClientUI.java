@@ -157,7 +157,7 @@ public class ClientUI {
         }
 
         try {
-            websocketCommunicator.resign(authToken);
+            websocketCommunicator.resign(authToken, currentGameID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -165,7 +165,7 @@ public class ClientUI {
 
     private void leaveGame() {
         try {
-            websocketCommunicator.leave(authToken);
+            websocketCommunicator.leave(authToken, currentGameID);
             System.out.println("You left the game.");
             currentGameID = -1;
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class ClientUI {
     private void makeMove(String[] args) {
         ChessMove chessMove = ChessMove.fromString(args[1]);
         try {
-            websocketCommunicator.makeMove(authToken, chessMove);
+            websocketCommunicator.makeMove(chessMove, authToken, currentGameID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
