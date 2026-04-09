@@ -30,7 +30,7 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        char columnName = (char) (col + 97);
+        char columnName = (char) (col + 96);
         return String.format("%c%d", columnName, row);
     }
 
