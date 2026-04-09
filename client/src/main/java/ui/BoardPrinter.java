@@ -92,12 +92,15 @@ public class BoardPrinter {
         printRowLabel(rowNum);
 
         boolean highlightPosition = false;
-        for (int i = 0; i < 8; i++) {
-            boolean highlight = highlightSquare(legalEndPositions, rowNum, i);
+        int start = blackPlayer ? 8 : 1;
+        int update = blackPlayer ? -1 : 1;
+
+        for (int colNum = start; colNum > 0 && colNum < 9; colNum += update) {
+            boolean highlight = highlightSquare(legalEndPositions, rowNum, colNum);
             if (startPosition != null) {
-                highlightPosition = startPosition.getRow() == rowNum && startPosition.getColumn() == i;
+                highlightPosition = startPosition.getRow() == rowNum && startPosition.getColumn() == colNum;
             }
-            printSquare(pieces[i], blackSquare, highlight, highlightPosition);
+            printSquare(pieces[colNum-1], blackSquare, highlight, highlightPosition);
             blackSquare = !blackSquare;
         }
 
