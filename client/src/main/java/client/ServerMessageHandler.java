@@ -47,10 +47,13 @@ public class ServerMessageHandler {
     private void printMessage(String message) {
         System.out.println(EscapeSequences.SET_TEXT_COLOR_RED);
         System.out.println(message);
+        System.out.println();
         printPrompt();
     }
 
     private void printPrompt() {
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(EscapeSequences.RESET_BG_COLOR);
         System.out.print("[PLAYING CHESS] >>> ");
         System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
