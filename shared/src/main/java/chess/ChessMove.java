@@ -51,13 +51,15 @@ public class ChessMove {
     @Override
     public String toString() {
         String str = startPosition.toString() + "-" + endPosition.toString();
-        str += switch (promotionPiece) {
-            case ChessPiece.PieceType.QUEEN -> "=Q";
-            case ChessPiece.PieceType.ROOK -> "=R";
-            case ChessPiece.PieceType.BISHOP -> "=B";
-            case ChessPiece.PieceType.KNIGHT -> "=N";
-            default -> "";
-        };
+        if (promotionPiece != null) {
+            str += switch (promotionPiece) {
+                case ChessPiece.PieceType.QUEEN -> "=Q";
+                case ChessPiece.PieceType.ROOK -> "=R";
+                case ChessPiece.PieceType.BISHOP -> "=B";
+                case ChessPiece.PieceType.KNIGHT -> "=N";
+                default -> "";
+            };
+        }
         return str;
     }
 

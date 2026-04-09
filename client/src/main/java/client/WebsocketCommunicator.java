@@ -20,7 +20,7 @@ public class WebsocketCommunicator extends Endpoint {
         url = url.replace("http", "ws");
         socketURI = new URI(url + ":" + port + "/ws");
         this.serverMessageHandler = serverMessageHandler;
-        this.session = null;
+        session = null;
     }
 
     @Override
@@ -29,9 +29,9 @@ public class WebsocketCommunicator extends Endpoint {
 
     public void connect(String authToken, int gameID) throws Exception {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        this.session = container.connectToServer(this, socketURI);
+        session = container.connectToServer(this, socketURI);
 
-        this.session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+        session.addMessageHandler((MessageHandler.Whole<String>) message -> {
             ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
             serverMessageHandler.notify(serverMessage);
         });
@@ -57,6 +57,6 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     private void sendCommand(UserGameCommand command) throws IOException {
-        this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        session.getBasicRemote().sendText(new Gson().toJson(command));
     }
 }

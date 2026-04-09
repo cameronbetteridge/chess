@@ -52,6 +52,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             System.err.println("IO Error: " + ex.getMessage());
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
+            ex.printStackTrace();
 
             String message = "Error: Invalid command.";
             ErrorMessage errorMessage = new ErrorMessage(message);
@@ -70,9 +71,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(UserGameCommand command, Session session) throws IOException, DataAccessException {
-        System.out.println("Connection Command Received");
         connections.add(session, command.getGameID());
-        System.out.println("Connection Added");
 
         String username = authDAO.getAuth(command.getAuthToken()).userName();
         GameData game = gameDAO.getGame(command.getGameID());
@@ -81,14 +80,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (session.isOpen()) {
             connections.send(session, loadGameMessage);
         }
-        System.out.println("LoadGame Message Sent");
 
         String message = createConnectMessage(command, username, game);
         NotificationMessage notification = new NotificationMessage(message);
 
         connections.broadcast(command.getGameID(), session, notification);
 
-        System.out.println("Connection Messages Broadcasted");
     }
 
     @NotNull
