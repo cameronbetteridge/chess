@@ -88,7 +88,8 @@ public class BoardPrinter {
         System.out.print(EscapeSequences.EMPTY);
     }
 
-    private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum, ChessPosition startPosition, Collection<ChessPosition> legalEndPositions) {
+    private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum,
+                          ChessPosition startPosition, Collection<ChessPosition> legalEndPositions) {
         printRowLabel(rowNum);
 
         boolean highlightPosition = false;
