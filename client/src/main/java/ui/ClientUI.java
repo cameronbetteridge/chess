@@ -152,6 +152,11 @@ public class ClientUI {
     }
 
     private void highlight(String[] args) {
+        if (args.length < 2) {
+            System.out.println("That's not right. Type Help for more information.");
+            return;
+        }
+
         try {
             ChessPosition highlightPosition = ChessPosition.fromString(args[1]);
             boardPrinter.printBoard(highlightPosition);
@@ -187,6 +192,11 @@ public class ClientUI {
     }
 
     private void makeMove(String[] args) {
+        if (args.length < 2) {
+            System.out.println("That's not right. Type Help for more information.");
+            return;
+        }
+
         try {
             ChessMove chessMove = ChessMove.fromString(args[1]);
             websocketCommunicator.makeMove(chessMove, authToken, currentGameID);
