@@ -49,6 +49,8 @@ public class ClientUI {
 
     private String[] getInput(boolean loggedIn, boolean inGame) {
         Scanner scanner = new Scanner(System.in);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(EscapeSequences.RESET_BG_COLOR);
         if (loggedIn && inGame)  {
             System.out.print("[PLAYING CHESS] >>> ");
         } else if (loggedIn) {
@@ -202,7 +204,6 @@ public class ClientUI {
                 currentGameID = gameIDs.get(gameNum);
 
                 boardPrinter.setBlackPlayer(args[2].equals("black"));
-                boardPrinter.printBoard(null);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -220,7 +221,6 @@ public class ClientUI {
                 currentGameID = gameIDs.get(gameNum);
 
                 boardPrinter.setBlackPlayer(false);
-                boardPrinter.printBoard(null);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
