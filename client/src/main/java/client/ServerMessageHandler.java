@@ -1,5 +1,6 @@
 package client;
 
+import com.google.gson.Gson;
 import ui.BoardPrinter;
 import ui.EscapeSequences;
 import websocket.messages.ErrorMessage;
@@ -14,28 +15,32 @@ public class ServerMessageHandler {
         this.boardPrinter = boardPrinter;
     }
 
-    public void notify(ServerMessage serverMessage) {
+    public void notify(String message) {
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
         switch (serverMessage.getServerMessageType()) {
             case ServerMessage.ServerMessageType.NOTIFICATION ->
-                    notification((NotificationMessage) serverMessage);
+                    notification(message);
             case ServerMessage.ServerMessageType.LOAD_GAME ->
-                    loadGame((LoadGameMessage) serverMessage);
+                    loadGame(message);
             case ServerMessage.ServerMessageType.ERROR ->
-                    error((ErrorMessage) serverMessage);
+                    error(message);
         }
     }
 
-    private void notification(NotificationMessage notificationMessage) {
+    private void notification(String message) {
+        NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
         printMessage(notificationMessage.getMessage());
     }
 
-    private void loadGame(LoadGameMessage loadGameMessage) {
+    private void loadGame(String message) {
+        LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
         boardPrinter.setBoard(loadGameMessage.getGame().getBoard());
         boardPrinter.printBoard(null);
         printPrompt();
     }
 
-    private void error(ErrorMessage errorMessage) {
+    private void error(String message) {
+        ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
         printMessage(errorMessage.getErrorMessage());
     }
 

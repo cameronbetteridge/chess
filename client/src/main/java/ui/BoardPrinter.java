@@ -91,9 +91,12 @@ public class BoardPrinter {
     private void printRow(ChessPiece[] pieces, boolean blackSquare, int rowNum, ChessPosition startPosition, Collection<ChessPosition> legalEndPositions) {
         printRowLabel(rowNum);
 
+        boolean highlightPosition = false;
         for (int i = 0; i < 8; i++) {
             boolean highlight = highlightSquare(legalEndPositions, rowNum, i);
-            boolean highlightPosition = startPosition.getRow() == rowNum && startPosition.getColumn() == i;
+            if (startPosition != null) {
+                highlightPosition = startPosition.getRow() == rowNum && startPosition.getColumn() == i;
+            }
             printSquare(pieces[i], blackSquare, highlight, highlightPosition);
             blackSquare = !blackSquare;
         }

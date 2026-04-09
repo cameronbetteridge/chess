@@ -30,9 +30,11 @@ public class WebsocketCommunicator extends Endpoint {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         session = container.connectToServer(this, socketURI);
 
-        session.addMessageHandler((MessageHandler.Whole<String>) message -> {
-            ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-            serverMessageHandler.notify(serverMessage);
+        session.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message) {
+                serverMessageHandler.notify(message);
+            }
         });
 
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
@@ -53,6 +55,7 @@ public class WebsocketCommunicator extends Endpoint {
     public void leave(String authToken, int gameID) throws IOException {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
         sendCommand(command);
+        session = null;
     }
 
     private void sendCommand(UserGameCommand command) throws IOException {
