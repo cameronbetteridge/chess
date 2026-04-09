@@ -37,5 +37,6 @@ public class ConnectionManager {
         if (session.isOpen()) {
             session.getRemote().sendString(json);
         }
+        System.out.printf("Sent %s message to client.%n", message.getServerMessageType().toString());
     }
 }

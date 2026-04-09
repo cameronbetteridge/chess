@@ -32,7 +32,7 @@ public class ClientUI {
     public void mainLoop() {
         boolean done = false;
         while (true) {
-            String[] args = getInput(authToken != null);
+            String[] args = getInput(authToken != null, currentGameID != -1);
             if (authToken == null) {
                 done = preLogin(args);
             } else if (currentGameID == -1) {
@@ -47,9 +47,11 @@ public class ClientUI {
         }
     }
 
-    private String[] getInput(boolean loggedIn) {
+    private String[] getInput(boolean loggedIn, boolean inGame) {
         Scanner scanner = new Scanner(System.in);
-        if (loggedIn) {
+        if (loggedIn && inGame)  {
+            System.out.print("[PLAYING CHESS] >>> ");
+        } else if (loggedIn) {
             System.out.print("[LOGGED IN] >>> ");
         } else {
             System.out.print("[LOGGED OUT] >>> ");
@@ -144,6 +146,8 @@ public class ClientUI {
                 resign();
             case "leave" ->
                 leaveGame();
+            default ->
+                    System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
         }
     }
 
@@ -196,7 +200,9 @@ public class ClientUI {
                 serverFacade.joinGame(authToken, gameIDs.get(gameNum), args[2].toUpperCase());
                 websocketCommunicator.connect(authToken, gameIDs.get(gameNum));
                 currentGameID = gameIDs.get(gameNum);
+
                 boardPrinter.setBlackPlayer(args[2].equals("black"));
+                boardPrinter.printBoard(null);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -212,7 +218,9 @@ public class ClientUI {
                 int gameNum = Integer.parseInt(args[1]);
                 websocketCommunicator.connect(authToken, gameIDs.get(gameNum));
                 currentGameID = gameIDs.get(gameNum);
+
                 boardPrinter.setBlackPlayer(false);
+                boardPrinter.printBoard(null);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

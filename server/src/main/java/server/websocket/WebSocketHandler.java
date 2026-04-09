@@ -85,7 +85,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         NotificationMessage notification = new NotificationMessage(message);
 
         connections.broadcast(command.getGameID(), session, notification);
-
     }
 
     @NotNull

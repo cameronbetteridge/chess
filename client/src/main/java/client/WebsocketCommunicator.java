@@ -16,9 +16,8 @@ public class WebsocketCommunicator extends Endpoint {
     ServerMessageHandler serverMessageHandler;
     URI socketURI;
 
-    public WebsocketCommunicator(String url, int port, ServerMessageHandler serverMessageHandler) throws URISyntaxException {
-        url = url.replace("http", "ws");
-        socketURI = new URI(url + ":" + port + "/ws");
+    public WebsocketCommunicator(String host, int port, ServerMessageHandler serverMessageHandler) throws URISyntaxException {
+        socketURI = new URI("ws://" + host + ":" + port + "/ws");
         this.serverMessageHandler = serverMessageHandler;
         session = null;
     }

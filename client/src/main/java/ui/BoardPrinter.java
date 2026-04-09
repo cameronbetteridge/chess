@@ -17,6 +17,11 @@ public class BoardPrinter {
     }
 
     public void printBoard(ChessPosition highlightPosition) {
+        if (board == null) {
+            System.out.println("Something went wrong with loading the board...");
+            return;
+        }
+
         Collection<ChessPosition> legalEndPositions = getLegalEndPositions(highlightPosition);
 
         System.out.println();

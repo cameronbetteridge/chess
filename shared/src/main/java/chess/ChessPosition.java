@@ -36,8 +36,8 @@ public class ChessPosition {
 
     public static ChessPosition fromString(String str) {
         char columnName = str.charAt(0);
-        int col = columnName - 97;
-        int row = str.charAt(1);
+        int col = columnName - 96;
+        int row = str.charAt(1) - 48;
         return new ChessPosition(row, col);
     }
 
