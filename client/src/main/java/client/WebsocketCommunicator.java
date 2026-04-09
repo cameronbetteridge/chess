@@ -3,12 +3,7 @@ package client;
 import chess.ChessMove;
 import com.google.gson.Gson;
 
-import io.javalin.router.Endpoint;
-
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.WebSocketContainer;
-import jakarta.websocket.Session;
-import jakarta.websocket.MessageHandler;
+import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -21,15 +16,15 @@ public class WebsocketCommunicator extends Endpoint {
     ServerMessageHandler serverMessageHandler;
     URI socketURI;
 
-    public WebsocketCommunicator(String url, int port, ServerMessageHandler serverMessageHandler) throws Exception {
-        try {
-            url = url.replace("http", "ws");
-            socketURI = new URI(url + ":" + port + "/ws");
-            this.serverMessageHandler = serverMessageHandler;
-            this.session = null;
-        } catch (URISyntaxException ex) {
-            throw new Exception(ex.getMessage());
-        }
+    public WebsocketCommunicator(String url, int port, ServerMessageHandler serverMessageHandler) throws URISyntaxException {
+        url = url.replace("http", "ws");
+        socketURI = new URI(url + ":" + port + "/ws");
+        this.serverMessageHandler = serverMessageHandler;
+        this.session = null;
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
     public void connect(String authToken, int gameID) throws Exception {

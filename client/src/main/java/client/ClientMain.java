@@ -3,6 +3,8 @@ package client;
 import ui.BoardPrinter;
 import ui.ClientUI;
 
+import java.net.URISyntaxException;
+
 public class ClientMain {
     public static void main(String[] args) {
         ServerFacade serverFacade = new ServerFacade("localhost", 8080);
@@ -12,7 +14,7 @@ public class ClientMain {
 
         try {
             websocketCommunicator = new WebsocketCommunicator("localhost", 8080, serverMessageHandler);
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
             System.err.println(e.getMessage());
             return;
         }
