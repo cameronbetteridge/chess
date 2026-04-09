@@ -65,9 +65,9 @@ public class BoardPrinter {
             pieces[i -1] = board.getPiece(new ChessPosition(rowNum, i));
         }
 
-        if (blackPlayer) {
-            reversePieces(pieces);
-        }
+//        if (blackPlayer) {
+//            reversePieces(pieces);
+//        }
 
         return pieces;
     }

@@ -137,6 +137,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return "Error: You must be a player to make a move.";
         }
 
+        if (game.game().gameOver()) {
+            return "Error: The game is over.";
+        }
+
         try {
             game.game().makeMove(move);
             return null;

@@ -68,12 +68,13 @@ public class ChessMove {
         if (str.indexOf('=') != -1) {
             char promotionChar = str.charAt(str.indexOf('=') + 1);
             promotionPiece = switch (promotionChar) {
-                case 'Q' -> ChessPiece.PieceType.QUEEN;
-                case 'R' -> ChessPiece.PieceType.ROOK;
-                case 'B' -> ChessPiece.PieceType.BISHOP;
-                case 'N' -> ChessPiece.PieceType.KNIGHT;
+                case 'q' -> ChessPiece.PieceType.QUEEN;
+                case 'r' -> ChessPiece.PieceType.ROOK;
+                case 'b' -> ChessPiece.PieceType.BISHOP;
+                case 'n' -> ChessPiece.PieceType.KNIGHT;
                 default -> null;
             };
+            str = str.split("=")[0];
         }
 
         String[] positions = str.split("-");
