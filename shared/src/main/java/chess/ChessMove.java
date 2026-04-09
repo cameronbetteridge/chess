@@ -63,7 +63,7 @@ public class ChessMove {
         return str;
     }
 
-    public static ChessMove fromString(String str) {
+    public static ChessMove fromString(String str) throws Exception{
         ChessPiece.PieceType promotionPiece = null;
         if (str.indexOf('=') != -1) {
             char promotionChar = str.charAt(str.indexOf('=') + 1);
@@ -77,6 +77,10 @@ public class ChessMove {
         }
 
         String[] positions = str.split("-");
+        if (positions.length != 2) {
+            throw new Exception("Error: Invalid move.");
+        }
+
         ChessPosition startPosition = ChessPosition.fromString(positions[0]);
         ChessPosition endPosition = ChessPosition.fromString(positions[1]);
 

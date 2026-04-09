@@ -34,10 +34,19 @@ public class ChessPosition {
         return String.format("%c%d", columnName, row);
     }
 
-    public static ChessPosition fromString(String str) {
+    public static ChessPosition fromString(String str) throws Exception{
+        if (str.length() != 2) {
+            throw new Exception("Error: Invalid position.");
+        }
+
         char columnName = str.charAt(0);
         int col = columnName - 96;
         int row = str.charAt(1) - 48;
+
+        if (col < 1 || col > 8 || row < 1 || row > 8) {
+            throw new Exception("Error: Invalid position.");
+        }
+
         return new ChessPosition(row, col);
     }
 

@@ -140,16 +140,23 @@ public class ClientUI {
                 boardPrinter.printBoard(null);
             case "move" ->
                 makeMove(args);
-            case "legal" -> {
-                ChessPosition highlightPosition = ChessPosition.fromString(args[1]);
-                boardPrinter.printBoard(highlightPosition);
-            }
+            case "legal" ->
+                highlight(args);
             case "resign" ->
                 resign();
             case "leave" ->
                 leaveGame();
             default ->
                     System.out.println("'" + args[0] + "' is not an option. Type Help for more information.");
+        }
+    }
+
+    private void highlight(String[] args) {
+        try {
+            ChessPosition highlightPosition = ChessPosition.fromString(args[1]);
+            boardPrinter.printBoard(highlightPosition);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -180,8 +187,8 @@ public class ClientUI {
     }
 
     private void makeMove(String[] args) {
-        ChessMove chessMove = ChessMove.fromString(args[1]);
         try {
+            ChessMove chessMove = ChessMove.fromString(args[1]);
             websocketCommunicator.makeMove(chessMove, authToken, currentGameID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
