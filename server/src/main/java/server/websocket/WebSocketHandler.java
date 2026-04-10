@@ -113,7 +113,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             NotificationMessage notification = new NotificationMessage(message);
             connections.broadcast(command.getGameID(), session, notification);
 
-            sendKeyGameStateMessage(game, session);
+            sendKeyGameStateMessage(game);
 
             gameDAO.updateGame(command.getGameID(), game);
         } else {
@@ -149,7 +149,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void sendKeyGameStateMessage(GameData game, Session session) throws IOException {
+    private void sendKeyGameStateMessage(GameData game) throws IOException {
         String message = null;
 
         if (game.game().gameOver()) {
